@@ -11,11 +11,17 @@ class MoverLogParser:
 
     def get_latest_stats(self):
         try:
-            # Find the most recent log file in the directory
-            list_of_files = glob.glob(f'{self.log_dir}/*.log')
+            # 1. Prioritize files starting with "Filtered_fles_"
+            list_of_files = glob.glob(f'{self.log_dir}/Filtered_fles_*.log')
+            
+            # 2. Fallback to any .log if the specific filter log doesn't exist
+            if not list_of_files:
+                list_of_files = glob.glob(f'{self.log_dir}/*.log')
+                
             if not list_of_files:
                 return None
 
+            # Get the most recent one among the candidates
             latest_file = max(list_of_files, key=os.path.getctime)
             
             stats = {
@@ -28,14 +34,16 @@ class MoverLogParser:
 
             with open(latest_file, 'r') as f:
                 for line in f:
-                    # Mover Tuning specific strings
-                    if "skipping" in line.lower() or "not moving" in line.lower():
+                    line_low = line.lower()
+                    # Mover Tuning Log Logic
+                    if "skipping" in line_low or "not moving" in line_low:
                         stats["excluded"] += 1
-                    elif "moving" in line.lower() and "skipping" not in line.lower():
+                    elif "moving" in line_low and "skipping" not in line_low:
                         stats["moved"] += 1
-                    elif "error" in line.lower():
+                    elif "error" in line_low:
                         stats["errors"] += 1
             
+            logger.info(f"Parsed stats from {stats['filename']}: {stats['excluded']} excluded")
             return stats
         except Exception as e:
             logger.error(f"Failed to parse mover logs: {e}")
