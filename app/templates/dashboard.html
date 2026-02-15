@@ -7,7 +7,7 @@
             <div class="text-lg font-bold {% if radarr_connected %}text-green-600{% else %}text-red-600{% endif %}">
                 {% if radarr_connected %}Connected{% else %}Disconnected{% endif %}
             </div>
-            <div class="text-xs text-gray-400">Last Sync: {{ last_run_radarr }}</div>
+
         </div>
 
         <div class="bg-white dark:bg-gray-800 p-5 shadow rounded-lg">
@@ -15,7 +15,7 @@
             <div class="text-lg font-bold {% if sonarr_connected %}text-green-600{% else %}text-red-600{% endif %}">
                 {% if sonarr_connected %}Connected{% else %}Disconnected{% endif %}
             </div>
-            <div class="text-xs text-gray-400">Last Sync: {{ last_run_sonarr }}</div>
+
         </div>
 
         <div class="bg-white dark:bg-gray-800 p-5 shadow rounded-lg">
