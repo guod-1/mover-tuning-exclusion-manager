@@ -65,6 +65,14 @@ class RadarrSettings(BaseModel):
     api_key: str = Field(default="", description="Radarr API key")
 
 
+
+
+class SonarrSettings(BaseModel):
+    """Sonarr connection settings"""
+    url: str = Field(default="http://localhost:8989", description="Sonarr URL")
+    api_key: str = Field(default="", description="Sonarr API key")
+
+
 class TagOperation(BaseModel):
     """Tag operation configuration"""
     search_tag_id: Optional[int] = Field(default=None, description="Tag ID to search for")
@@ -85,11 +93,13 @@ class SchedulerSettings(BaseModel):
     """Scheduler configuration"""
     enabled: bool = Field(default=False, description="Enable automatic runs")
     cron_expression: str = Field(default="0 */6 * * *", description="Cron expression (every 6 hours)")
+    ca_mover_check_cron: str = Field(default="30 23 * * *", description="CA Mover log check cron (11:30 PM daily)")
 
 
 class UserSettings(BaseModel):
     """All user-configurable settings"""
     radarr: RadarrSettings = Field(default_factory=RadarrSettings)
+    sonarr: SonarrSettings = Field(default_factory=SonarrSettings)
     tag_operation: TagOperation = Field(default_factory=TagOperation)
     exclusions: ExclusionSettings = Field(default_factory=ExclusionSettings)
     scheduler: SchedulerSettings = Field(default_factory=SchedulerSettings)
