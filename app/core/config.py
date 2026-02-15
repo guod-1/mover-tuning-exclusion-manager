@@ -49,7 +49,7 @@ class UserSettings(BaseModel):
     last_run: LastRunSettings = LastRunSettings()
 
 def get_user_settings() -> UserSettings:
-    if not CONFIG_FILE.exists():
+    if not CONFIG_FILE.exists() or CONFIG_FILE.stat().st_size == 0:
         return UserSettings()
     try:
         with open(CONFIG_FILE, "r") as f:
@@ -62,6 +62,7 @@ def get_user_settings() -> UserSettings:
 def save_user_settings(settings: UserSettings):
     try:
         with open(CONFIG_FILE, "w") as f:
-            f.write(settings.json(indent=4))
+            # FIX: Use model_dump_json for Pydantic V2 compatibility
+            f.write(settings.model_dump_json(indent=4))
     except Exception as e:
         logger.error(f"Failed to save settings: {e}")
