@@ -12,23 +12,22 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/", response_class=HTMLResponse)
 async def logs_page(request: Request):
     log_content = ""
-    # Use the absolute path mapped in Unraid
     log_path = "/config/app.log"
     
     if os.path.exists(log_path):
         try:
             with open(log_path, "r") as f:
                 lines = f.readlines()
-                # Grab the last 200 lines
+                # Grab last 200 lines and join them into one string
                 log_content = "".join(lines[-200:])
         except Exception as e:
             log_content = f"Error reading logs: {str(e)}"
     else:
-        log_content = f"Log file not found at {log_path}. Check if the container has write permissions."
+        log_content = f"Log file not found at {log_path}."
 
     return templates.TemplateResponse("logs.html", {
         "request": request,
-        "logs": log_content
+        "log_content": log_content
     })
 
 @router.get("/download")
