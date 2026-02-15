@@ -1,9 +1,7 @@
 """
 Shows Router
-
 Display TV shows from Sonarr with specific tags
 """
-
 from fastapi import APIRouter, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -21,7 +19,6 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/", response_class=HTMLResponse)
 async def shows_page(request: Request):
     """Shows listing page"""
-    
     user_settings = get_user_settings()
     sonarr_client = get_sonarr_client()
     
@@ -30,7 +27,6 @@ async def shows_page(request: Request):
     
     if tag_id:
         try:
-            # Get series with the tag
             series_ids = sonarr_client.get_series_ids_by_tag(tag_id)
             
             for series_id in series_ids:
