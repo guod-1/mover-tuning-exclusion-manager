@@ -36,6 +36,10 @@ async def dashboard(request: Request):
     # Check Radarr connection
     radarr_connected = radarr_client.test_connection()
     
+    # Check Sonarr connection
+    sonarr_client = get_sonarr_client()
+    sonarr_connected = sonarr_client.test_connection()
+    
     # Get exclusion stats
     exclusion_stats = exclusion_manager.get_exclusion_stats()
     
@@ -50,8 +54,6 @@ async def dashboard(request: Request):
         "request": request,
         "radarr_connected": radarr_connected,
         "radarr_url": user_settings.radarr.url,
-        "sonarr_connected": sonarr_connected,
-        "sonarr_url": user_settings.sonarr.url,
         "sonarr_connected": sonarr_connected,
         "sonarr_url": user_settings.sonarr.url,
         "scheduler_enabled": user_settings.scheduler.enabled,
