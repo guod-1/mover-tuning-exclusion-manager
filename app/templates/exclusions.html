@@ -48,7 +48,7 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Folder Exclusions</label>
                 <textarea name="custom_folders" rows="6" 
                     class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 font-mono text-sm text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="/mnt/chloe/data/media/movies/Favorites/&#10;/mnt/chloe/data/media/tv/Kids Shows/">{{ '\n'.join(settings.exclusions.custom_folders) }}</textarea>
+                    placeholder="/mnt/chloe/data/media/movies/Favorites/&#10;/mnt/chloe/data/media/tv/Kids Shows/">{{ '\n'.join(user_settings.exclusions.custom_folders) }}</textarea>
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">One path per line. These folders will always be excluded from mover.</p>
             </div>
 
@@ -72,7 +72,7 @@
                 </div>
 
                 <div id="selected-tags" class="space-y-2 mb-3">
-                    {% for tag_id in settings.exclusions.exclude_tag_ids %}
+                    {% for tag_id in user_settings.exclusions.exclude_tag_ids %}
                     {% set tag_info = tags|selectattr('id', 'equalto', tag_id)|first %}
                     <div class="flex items-center justify-between bg-gray-100 dark:bg-gray-700 px-3 py-2 rounded-md tag-item" data-tag-id="{{ tag_id }}">
                         <span class="text-sm text-gray-900 dark:text-gray-100">
@@ -86,14 +86,14 @@
                     {% endfor %}
                 </div>
 
-                <input type="hidden" name="exclude_tag_ids" id="exclude-tag-ids" value="{{ ','.join(settings.exclusions.exclude_tag_ids|map('string')) }}">
+                <input type="hidden" name="exclude_tag_ids" id="exclude-tag-ids" value="{{ ','.join(user_settings.exclusions.exclude_tag_ids|map('string')) }}">
                 <p class="text-sm text-gray-500 dark:text-gray-400">Movies with these tags will be added to exclusions.</p>
             </div>
 
             <!-- PlexCache-D File -->
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">PlexCache-D Exclusions File Path</label>
-                <input type="text" name="plexcache_file_path" value="{{ settings.exclusions.plexcache_file_path }}"
+                <input type="text" name="plexcache_file_path" value="{{ user_settings.exclusions.plexcache_file_path }}"
                     class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 font-mono text-sm text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500">
                 <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Path to PlexCache-D's unraid_mover_exclusions.txt file</p>
             </div>
