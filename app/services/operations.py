@@ -6,8 +6,8 @@ from app.core.config import get_user_settings
 
 logger = logging.getLogger(__name__)
 
-async def run_exclusion_logic():
-    """Builds and combines exclusion files"""
+async def run_exclusion_builder():
+    """Builds and combines exclusion files - Matches router expectation"""
     try:
         manager = get_exclusion_manager()
         count = manager.combine_exclusions()
@@ -27,24 +27,18 @@ async def run_radarr_tag_operation():
 
         client = get_radarr_client()
         movies = client.get_all_movies()
-        
         affected = 0
         for movie in movies:
             tags = movie.get('tags', [])
             if ops.search_tag_id in tags:
-                # Update tags: remove search, add replace
                 new_tags = [t for t in tags if t != ops.search_tag_id]
                 if ops.replace_tag_id not in new_tags:
                     new_tags.append(ops.replace_tag_id)
-                
                 movie['tags'] = new_tags
                 client.update_movie(movie)
                 affected += 1
-        
-        logger.info(f"Radarr tag sync: Updated {affected} movies")
         return {"status": "success", "message": f"Updated {affected} movies"}
     except Exception as e:
-        logger.error(f"Radarr tag operation failed: {e}")
         return {"status": "error", "message": str(e)}
 
 async def run_sonarr_tag_operation():
@@ -57,7 +51,6 @@ async def run_sonarr_tag_operation():
 
         client = get_sonarr_client()
         shows = client.get_all_shows()
-        
         affected = 0
         for show in shows:
             tags = show.get('tags', [])
@@ -65,25 +58,19 @@ async def run_sonarr_tag_operation():
                 new_tags = [t for t in tags if t != ops.search_tag_id]
                 if ops.replace_tag_id not in new_tags:
                     new_tags.append(ops.replace_tag_id)
-                
                 show['tags'] = new_tags
                 client.update_show(show)
                 affected += 1
-                
-        logger.info(f"Sonarr tag sync: Updated {affected} shows")
         return {"status": "success", "message": f"Updated {affected} shows"}
     except Exception as e:
-        logger.error(f"Sonarr tag operation failed: {e}")
         return {"status": "error", "message": str(e)}
 
 async def run_full_sync():
     """Runs all operations in sequence"""
     try:
-        results = []
-        results.append(await run_radarr_tag_operation())
-        results.append(await run_sonarr_tag_operation())
-        results.append(await run_exclusion_logic())
-        return {"status": "success", "details": results}
+        await run_radarr_tag_operation()
+        await run_sonarr_tag_operation()
+        res = await run_exclusion_builder()
+        return {"status": "success", "message": f"Full sync complete. {res.get('message', '')}"}
     except Exception as e:
-        logger.error(f"Full sync failed: {e}")
         return {"status": "error", "message": str(e)}
