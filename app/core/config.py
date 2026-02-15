@@ -7,7 +7,11 @@ CONFIG_PATH = "/config/settings.json"
 
 class RadarrTagOperation(BaseModel):
     tag_id: int
-    action: str  # e.g., "exclude"
+    action: str
+
+class SonarrTagOperation(BaseModel):
+    tag_id: int
+    action: str
 
 class ExclusionSettings(BaseModel):
     custom_folders: List[str] = []
