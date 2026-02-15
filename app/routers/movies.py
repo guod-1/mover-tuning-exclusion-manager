@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import logging
 
-from app.services.radarr import get_radarr_client, MovieProcessor
+from app.services.radarr import get_radarr_client
 from app.core.config import get_user_settings
 
 logger = logging.getLogger(__name__)
@@ -24,40 +24,39 @@ async def movies_page(request: Request):
     
     user_settings = get_user_settings()
     radarr_client = get_radarr_client()
-    movie_processor = MovieProcessor()
     
-    # Fetch movies with source tag
-    try:
-        movie_ids = radarr_client.get_movie_ids_by_tag(user_settings.radarr.source_tag_id)
-        
-        movies = []
-        for movie_id in movie_ids[:50]:  # Limit to 50 for now
-            try:
-                movie = radarr_client.get_movie(movie_id)
-                if movie:
-                    ratings = movie_processor.get_movie_ratings(movie)
-                    is_high = movie_processor.is_high_rating(ratings)
-                    
-                    movies.append({
-                        'id': movie_id,
-                        'title': movie.get('title', 'Unknown'),
-                        'year': movie.get('year', ''),
-                        'ratings': ratings,
-                        'is_high_rating': is_high,
-                        'tags': movie.get('tags', [])
-                    })
-            except Exception as e:
-                logger.error(f"Error fetching movie {movie_id}: {e}")
-                continue
-        
-    except Exception as e:
-        logger.error(f"Error fetching movies: {e}")
-        movies = []
+    # Only fetch movies if tag operation is configured
+    movies = []
+    if user_settings.tag_operation.search_tag_id:
+        try:
+            movie_ids = radarr_client.get_movie_ids_by_tag(user_settings.tag_operation.search_tag_id)
+            
+            for movie_id in movie_ids[:50]:  # Limit to 50 for now
+                try:
+                    movie = radarr_client.get_movie(movie_id)
+                    if movie:
+                        ratings = {
+                            'imdb': movie.get('ratings', {}).get('imdb', {}).get('value', 0),
+                            'tmdb': movie.get('ratings', {}).get('tmdb', {}).get('value', 0)
+                        }
+                        
+                        movies.append({
+                            'id': movie_id,
+                            'title': movie.get('title', 'Unknown'),
+                            'year': movie.get('year', ''),
+                            'ratings': ratings,
+                            'tags': movie.get('tags', [])
+                        })
+                except Exception as e:
+                    logger.error(f"Error fetching movie {movie_id}: {e}")
+                    continue
+            
+        except Exception as e:
+            logger.error(f"Error fetching movies: {e}")
     
     context = {
         "request": request,
-        "movies": movies,
-        "thresholds": user_settings.thresholds.model_dump()
+        "movies": movies
     }
     
     return templates.TemplateResponse("movies.html", context)
@@ -69,25 +68,28 @@ async def get_movies_api():
     
     user_settings = get_user_settings()
     radarr_client = get_radarr_client()
-    movie_processor = MovieProcessor()
+    
+    if not user_settings.tag_operation.search_tag_id:
+        return {"success": False, "error": "No search tag configured"}
     
     try:
-        movie_ids = radarr_client.get_movie_ids_by_tag(user_settings.radarr.source_tag_id)
+        movie_ids = radarr_client.get_movie_ids_by_tag(user_settings.tag_operation.search_tag_id)
         
         movies = []
         for movie_id in movie_ids:
             try:
                 movie = radarr_client.get_movie(movie_id)
                 if movie:
-                    ratings = movie_processor.get_movie_ratings(movie)
-                    is_high = movie_processor.is_high_rating(ratings)
+                    ratings = {
+                        'imdb': movie.get('ratings', {}).get('imdb', {}).get('value', 0),
+                        'tmdb': movie.get('ratings', {}).get('tmdb', {}).get('value', 0)
+                    }
                     
                     movies.append({
                         'id': movie_id,
                         'title': movie.get('title', 'Unknown'),
                         'year': movie.get('year', ''),
-                        'ratings': ratings,
-                        'is_high_rating': is_high
+                        'ratings': ratings
                     })
             except:
                 continue
