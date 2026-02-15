@@ -1,0 +1,13 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#1e40af" rx="64"/>
+  
+  <!-- Folder icon -->
+  <path d="M128 160 L224 160 L256 192 L384 192 L384 384 L128 384 Z" fill="#60a5fa" stroke="#3b82f6" stroke-width="8"/>
+  
+  <!-- Shield/protection overlay -->
+  <path d="M256 208 L320 224 L320 304 C320 336 256 352 256 352 C256 352 192 336 192 304 L192 224 Z" fill="#10b981" stroke="#059669" stroke-width="6"/>
+  
+  <!-- Checkmark -->
+  <path d="M232 288 L248 304 L280 256" fill="none" stroke="white" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

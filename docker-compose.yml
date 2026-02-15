@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  radarr-cache-manager:
+  mover-tuning-exclusion-manager:
     build: .
-    container_name: radarr-cache-manager
+    container_name: mover-tuning-exclusion-manager
     ports:
       - "5858:5858"
     volumes:

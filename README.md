@@ -1,10 +1,10 @@
-# Radarr Cache Manager
+# Mover Tuning Exclusion Manager
 
 A Docker container with web UI for managing Radarr movie caching and Unraid mover exclusions based on movie ratings.
 
 ## Overview
 
-Radarr Cache Manager automates the process of keeping highly-rated movies on your Unraid cache drive while allowing lower-rated content to be moved to the array. It integrates with Radarr, PlexCache-D, and the Unraid mover system.
+Mover Tuning Exclusion Manager automates the process of keeping highly-rated movies on your Unraid cache drive while allowing lower-rated content to be moved to the array. It integrates with Radarr, PlexCache-D, and the Unraid mover system.
 
 ### What It Does
 
@@ -38,14 +38,14 @@ Radarr Cache Manager automates the process of keeping highly-rated movies on you
 
 ```bash
 docker run -d \
-  --name radarr-cache-manager \
+  --name mover-tuning-exclusion-manager \
   -p 5858:5858 \
-  -v /mnt/user/appdata/radarr-cache-manager:/config \
+  -v /mnt/user/appdata/mover-tuning-exclusion-manager:/config \
   -v /mnt/user/scripts:/scripts \
   -v /mnt/chloe:/mnt/chloe \
   -v /mnt/user/appdata/plexcache:/plexcache:ro \
   -e TZ=America/New_York \
-  ghcr.io/yourusername/radarr-cache-manager:latest
+  ghcr.io/yourusername/mover-tuning-exclusion-manager:latest
 ```
 
 ### Docker Compose
@@ -53,13 +53,13 @@ docker run -d \
 ```yaml
 version: '3'
 services:
-  radarr-cache-manager:
-    image: ghcr.io/yourusername/radarr-cache-manager:latest
-    container_name: radarr-cache-manager
+  mover-tuning-exclusion-manager:
+    image: ghcr.io/yourusername/mover-tuning-exclusion-manager:latest
+    container_name: mover-tuning-exclusion-manager
     ports:
       - "5858:5858"
     volumes:
-      - /mnt/user/appdata/radarr-cache-manager:/config
+      - /mnt/user/appdata/mover-tuning-exclusion-manager:/config
       - /mnt/user/scripts:/scripts
       - /mnt/chloe:/mnt/chloe
       - /mnt/user/appdata/plexcache:/plexcache:ro
@@ -73,7 +73,7 @@ services:
 ### Unraid Installation
 
 1. Go to **Docker** → **Add Container**
-2. Search Community Applications for "Radarr Cache Manager"
+2. Search Community Applications for "Mover Tuning Exclusion Manager"
 3. Click **Install**
 4. Configure paths and click **Apply**
 

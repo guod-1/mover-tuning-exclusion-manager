@@ -61,6 +61,7 @@ class CacheScheduler:
         """Execute the cache manager operation"""
         # Import here to avoid circular dependencies
         from app.services.operations import run_full_operation
+from app.services.ca_mover_scheduler import check_ca_mover_logs
         
         logger.info("Scheduled run started")
         try:
