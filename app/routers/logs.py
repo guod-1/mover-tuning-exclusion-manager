@@ -1,83 +1,44 @@
-"""
-Logs Router
-
-View and manage application logs
-"""
-
-from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi import APIRouter, Request, Form
+from fastapi.responses import HTMLResponse, RedirectResponse, FileResponse
 from fastapi.templating import Jinja2Templates
+import os
 import logging
-from pathlib import Path
-
-from app.core.config import get_settings
+from app.core.config import get_user_settings
 
 logger = logging.getLogger(__name__)
-
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-
 @router.get("/", response_class=HTMLResponse)
 async def logs_page(request: Request):
-    """Logs viewing page"""
-    
-    settings = get_settings()
-    
-    # Read last 1000 lines of log file
-    log_lines = []
-    try:
-        if settings.log_file.exists():
-            with open(settings.log_file, 'r') as f:
-                all_lines = f.readlines()
-                log_lines = all_lines[-1000:]  # Last 1000 lines
-    except Exception as e:
-        logger.error(f"Error reading log file: {e}")
-    
-    context = {
+    log_content = ""
+    log_path = "/config/app.log"
+    if os.path.exists(log_path):
+        try:
+            with open(log_path, "r") as f:
+                # Read last 200 lines for the UI
+                log_content = "".join(f.readlines()[-200:])
+        except Exception as e:
+            log_content = f"Error reading logs: {e}"
+    else:
+        log_content = "No log file found yet."
+
+    return templates.TemplateResponse("logs.html", {
         "request": request,
-        "log_lines": log_lines,
-        "log_file": str(settings.log_file)
-    }
-    
-    return templates.TemplateResponse("logs.html", context)
+        "logs": log_content
+    })
 
-
-@router.get("/api/tail")
-async def tail_logs(lines: int = 100):
-    """API endpoint to get last N lines of logs"""
-    
-    settings = get_settings()
-    
-    try:
-        if settings.log_file.exists():
-            with open(settings.log_file, 'r') as f:
-                all_lines = f.readlines()
-                log_lines = all_lines[-lines:]
-                return {"success": True, "lines": log_lines}
-        else:
-            return {"success": False, "error": "Log file not found"}
-    except Exception as e:
-        logger.error(f"Error reading log file: {e}")
-        return {"success": False, "error": str(e)}
-
-
-@router.get("/download", response_class=PlainTextResponse)
+@router.get("/download")
 async def download_logs():
-    """Download the full log file"""
-    
-    settings = get_settings()
-    
-    try:
-        if settings.log_file.exists():
-            with open(settings.log_file, 'r') as f:
-                content = f.read()
-            return PlainTextResponse(
-                content=content,
-                headers={"Content-Disposition": f"attachment; filename=radarr-cache-manager.log"}
-            )
-        else:
-            return PlainTextResponse("Log file not found", status_code=404)
-    except Exception as e:
-        logger.error(f"Error reading log file: {e}")
-        return PlainTextResponse(f"Error: {str(e)}", status_code=500)
+    log_path = "/config/app.log"
+    if os.path.exists(log_path):
+        return FileResponse(log_path, filename="mover_manager.log")
+    return {"error": "Log file not found"}
+
+@router.post("/clear", response_class=HTMLResponse)
+async def clear_logs():
+    log_path = "/config/app.log"
+    if os.path.exists(log_path):
+        with open(log_path, "w") as f:
+            f.write("")
+    return '<div class="bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded mb-4">Logs cleared successfully</div>'
