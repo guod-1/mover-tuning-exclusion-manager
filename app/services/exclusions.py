@@ -17,12 +17,14 @@ class ExclusionManager:
         all_paths = set()
 
         # A. Add Manual Folder Exclusions from Settings
-        if self.settings.exclusion_settings.folders:
-            for folder in self.settings.exclusion_settings.folders:
+        # FIX: Use 'exclusions.custom_folders'
+        if self.settings.exclusions.custom_folders:
+            for folder in self.settings.exclusions.custom_folders:
                 all_paths.add(folder.strip())
 
         # B. Add PlexCache-D Exclusions
-        plex_cache_file = Path(self.settings.exclusion_settings.plexcache_file)
+        # FIX: Use 'exclusions.plexcache_file_path'
+        plex_cache_file = Path(self.settings.exclusions.plexcache_file_path)
         if plex_cache_file.exists():
             with open(plex_cache_file, 'r') as f:
                 for line in f:
@@ -36,7 +38,8 @@ class ExclusionManager:
                 movies = radarr.get_all_movies()
                 for m in movies:
                     if self.settings.radarr_tag_operation.search_tag_id in m.get('tags', []):
-                        all_paths.add(m.get('path'))
+                        path = m.get('path')
+                        if path: all_paths.add(path)
             except Exception as e:
                 logger.error(f"Radarr exclusion fetch failed: {e}")
 
@@ -47,14 +50,18 @@ class ExclusionManager:
                 shows = sonarr.get_all_shows()
                 for s in shows:
                     if self.settings.sonarr_tag_operation.search_tag_id in s.get('tags', []):
-                        all_paths.add(s.get('path'))
+                        path = s.get('path')
+                        if path: all_paths.add(path)
             except Exception as e:
                 logger.error(f"Sonarr exclusion fetch failed: {e}")
 
         # Write fresh file
-        with open(self.output_file, 'w') as f:
-            for path in sorted(list(all_paths)):
-                f.write(f"{path}\n")
+        try:
+            with open(self.output_file, 'w') as f:
+                for path in sorted(list(all_paths)):
+                    f.write(f"{path}\n")
+        except Exception as e:
+            logger.error(f"Failed to write exclusion file: {e}")
 
         return len(all_paths)
 
