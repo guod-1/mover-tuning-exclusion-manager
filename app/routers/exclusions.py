@@ -13,8 +13,6 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/", response_class=HTMLResponse)
 async def exclusions_page(request: Request):
     settings = get_user_settings()
-    
-    # Fetch tags to populate the dropdowns
     radarr_tags = []
     sonarr_tags = []
     try:
@@ -32,10 +30,14 @@ async def exclusions_page(request: Request):
     })
 
 @router.post("/tags/add")
-async def add_exclusion_tag(tag_id: int = Form(...)):
+async def add_exclusion_tag(tag_id: str = Form(...)):
+    if not tag_id:
+        return RedirectResponse(url="/exclusions/", status_code=303)
+    
     settings = get_user_settings()
-    if tag_id not in settings.exclusions.exclude_tag_ids:
-        settings.exclusions.exclude_tag_ids.append(tag_id)
+    tid = int(tag_id)
+    if tid not in settings.exclusions.exclude_tag_ids:
+        settings.exclusions.exclude_tag_ids.append(tid)
         save_user_settings(settings)
     return RedirectResponse(url="/exclusions/", status_code=303)
 
