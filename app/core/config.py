@@ -73,10 +73,19 @@ class SonarrSettings(BaseModel):
     api_key: str = Field(default="", description="Sonarr API key")
 
 
-class TagOperation(BaseModel):
+class RadarrTagOperation(BaseModel):
     """Tag operation configuration"""
     search_tag_id: Optional[int] = Field(default=None, description="Tag ID to search for")
     replace_tag_id: Optional[int] = Field(default=None, description="Tag ID to replace with (optional)")
+
+
+
+
+
+class SonarrTagOperation(BaseModel):
+    """Sonarr tag operation settings"""
+    search_tag_id: Optional[int] = Field(default=None, description="Tag ID to search for")
+    replace_tag_id: Optional[int] = Field(default=None, description="Tag ID to replace with")
 
 
 class ExclusionSettings(BaseModel):
@@ -100,7 +109,8 @@ class UserSettings(BaseModel):
     """All user-configurable settings"""
     radarr: RadarrSettings = Field(default_factory=RadarrSettings)
     sonarr: SonarrSettings = Field(default_factory=SonarrSettings)
-    tag_operation: TagOperation = Field(default_factory=TagOperation)
+    radarr_tag_operation: RadarrTagOperation = Field(default_factory=RadarrTagOperation)
+    sonarr_tag_operation: SonarrTagOperation = Field(default_factory=SonarrTagOperation)
     exclusions: ExclusionSettings = Field(default_factory=ExclusionSettings)
     scheduler: SchedulerSettings = Field(default_factory=SchedulerSettings)
     

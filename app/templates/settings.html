@@ -62,18 +62,18 @@
         </form>
     </div>
 
-    <!-- Tag Operation -->
+    <!-- Radarr Tag Operation -->
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Tag Operation (Optional)</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Radarr Tag Operation (Optional)</h3>
         <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Find movies with a specific tag and optionally replace it with another tag.</p>
-        <form action="/settings/tags" method="post" class="space-y-4">
+        <form action="/settings/radarr-tags" method="post" class="space-y-4">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search for Tag ID</label>
-                    <select name="search_tag_id" class="mt-1 block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-gray-100">
+                    <select name="radarr_search_tag_id" class="mt-1 block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-gray-100">
                         <option value="">-- None --</option>
                         {% for tag in tags %}
-                        <option value="{{ tag.id }}" {% if settings.tag_operation.search_tag_id == tag.id %}selected{% endif %}>
+                        <option value="{{ tag.id }}" {% if settings.radarr_tag_operation.search_tag_id == tag.id %}selected{% endif %}>
                             {{ tag.label }} (ID: {{ tag.id }})
                         </option>
                         {% endfor %}
@@ -82,10 +82,10 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Replace with Tag ID (Optional)</label>
-                    <select name="replace_tag_id" class="mt-1 block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-gray-100">
+                    <select name="radarr_replace_tag_id" class="mt-1 block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-gray-100">
                         <option value="">-- Don't Replace --</option>
                         {% for tag in tags %}
-                        <option value="{{ tag.id }}" {% if settings.tag_operation.replace_tag_id == tag.id %}selected{% endif %}>
+                        <option value="{{ tag.id }}" {% if settings.radarr_tag_operation.replace_tag_id == tag.id %}selected{% endif %}>
                             {{ tag.label }} (ID: {{ tag.id }})
                         </option>
                         {% endfor %}
@@ -95,9 +95,50 @@
             </div>
             <button type="submit"
                 class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600">
-                Save Tag Settings
+                Save Radarr Tag Settings
             </button>
         </form>
+    </div>
+
+    <!-- Sonarr Tag Operation -->
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Sonarr Tag Operation (Optional)</h3>
+        <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Find TV shows with a specific tag and optionally replace it with another tag.</p>
+        <form action="/settings/sonarr-tags" method="post" class="space-y-4">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Search for Tag ID</label>
+                    <select name="sonarr_search_tag_id" class="mt-1 block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-gray-100">
+                        <option value="">-- None --</option>
+                        {% for tag in tags %}
+                        <option value="{{ tag.id }}" {% if settings.sonarr_tag_operation.search_tag_id == tag.id %}selected{% endif %}>
+                            {{ tag.label }} (ID: {{ tag.id }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Leave empty to skip tag operations</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Replace with Tag ID (Optional)</label>
+                    <select name="sonarr_replace_tag_id" class="mt-1 block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-gray-100">
+                        <option value="">-- Don't Replace --</option>
+                        {% for tag in tags %}
+                        <option value="{{ tag.id }}" {% if settings.sonarr_tag_operation.replace_tag_id == tag.id %}selected{% endif %}>
+                            {{ tag.label }} (ID: {{ tag.id }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Leave empty to just find shows</p>
+                </div>
+            </div>
+            <button type="submit"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600">
+                Save Sonarr Tag Settings
+            </button>
+        </form>
+    </div>
+
+    <!-- Scheduler -->
     </div>
 
     <!-- Scheduler -->

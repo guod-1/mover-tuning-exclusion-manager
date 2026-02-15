@@ -191,3 +191,45 @@ async def test_sonarr_connection():
     except Exception as e:
         logger.error(f"Sonarr connection test failed: {e}")
         return {"success": False, "message": str(e)}
+
+
+@router.post("/radarr-tags")
+async def update_radarr_tag_settings(
+    radarr_search_tag_id: Optional[int] = Form(None),
+    radarr_replace_tag_id: Optional[int] = Form(None)
+):
+    """Update Radarr tag operation settings"""
+    from app.core.config import RadarrTagOperation
+    
+    user_settings = get_user_settings()
+    
+    user_settings.radarr_tag_operation = RadarrTagOperation(
+        search_tag_id=radarr_search_tag_id,
+        replace_tag_id=radarr_replace_tag_id
+    )
+    
+    save_user_settings(user_settings)
+    logger.info("Radarr tag settings updated")
+    
+    return RedirectResponse(url="/settings?success=radarr_tags", status_code=303)
+
+
+@router.post("/sonarr-tags")
+async def update_sonarr_tag_settings(
+    sonarr_search_tag_id: Optional[int] = Form(None),
+    sonarr_replace_tag_id: Optional[int] = Form(None)
+):
+    """Update Sonarr tag operation settings"""
+    from app.core.config import SonarrTagOperation
+    
+    user_settings = get_user_settings()
+    
+    user_settings.sonarr_tag_operation = SonarrTagOperation(
+        search_tag_id=sonarr_search_tag_id,
+        replace_tag_id=sonarr_replace_tag_id
+    )
+    
+    save_user_settings(user_settings)
+    logger.info("Sonarr tag settings updated")
+    
+    return RedirectResponse(url="/settings?success=sonarr_tags", status_code=303)
