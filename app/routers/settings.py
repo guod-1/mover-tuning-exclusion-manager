@@ -5,11 +5,10 @@ import logging
 from app.core.config import (
     get_user_settings, save_user_settings,
     RadarrSettings, SonarrSettings, RadarrTagOperation, SonarrTagOperation,
-    SchedulerSettings
+    ExclusionSettings, SchedulerSettings
 )
 from app.services.radarr import get_radarr_client
 from app.services.sonarr import get_sonarr_client
-from app.core.scheduler import get_scheduler
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -18,19 +17,26 @@ templates = Jinja2Templates(directory="app/templates")
 @router.get("/", response_class=HTMLResponse)
 async def settings_page(request: Request):
     user_settings = get_user_settings()
+    
+    # Initialize empty lists
     radarr_tags = []
     sonarr_tags = []
+    
+    # Try to fetch actual tags from the APIs
     try:
         radarr_tags = get_radarr_client().get_all_tags()
-    except: pass
+    except Exception as e:
+        logger.warning(f"Could not load Radarr tags for settings: {e}")
+        
     try:
         sonarr_tags = get_sonarr_client().get_all_tags()
-    except: pass
-    
+    except Exception as e:
+        logger.warning(f"Could not load Sonarr tags for settings: {e}")
+
     return templates.TemplateResponse("settings.html", {
-        "request": request, 
-        "settings": user_settings, 
-        "radarr_tags": radarr_tags, 
+        "request": request,
+        "settings": user_settings,
+        "radarr_tags": radarr_tags,
         "sonarr_tags": sonarr_tags
     })
 
@@ -51,11 +57,3 @@ async def update_sonarr_tags(sonarr_search_tag_id: str = Form(""), sonarr_replac
     user_settings.sonarr_tag_operation = SonarrTagOperation(search_tag_id=s_id, replace_tag_id=r_id)
     save_user_settings(user_settings)
     return RedirectResponse(url="/settings/?success=sonarr_tags", status_code=303)
-
-@router.post("/scheduler")
-async def update_scheduler(enabled: bool = Form(False), cron_expression: str = Form(...)):
-    user_settings = get_user_settings()
-    clean_cron = cron_expression.replace('"', '').replace("'", "")
-    user_settings.scheduler = SchedulerSettings(enabled=enabled, cron_expression=clean_cron)
-    save_user_settings(user_settings)
-    return RedirectResponse(url="/settings/?success=scheduler", status_code=303)
