@@ -48,7 +48,7 @@ class SonarrClient:
             return []
 
     def update_show(self, show_data):
-        """Update a show entry (for tag swapping)"""
+        """Update a show entry"""
         try:
             sid = show_data.get('id')
             response = requests.put(f"{self.url}/api/v3/series/{sid}", json=show_data, headers=self._get_headers())
