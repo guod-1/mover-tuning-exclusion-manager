@@ -10,10 +10,11 @@ templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/", response_class=HTMLResponse)
 async def exclusions_page(request: Request):
-    user_settings = get_user_settings()
+    settings = get_user_settings()
+    # We pass it as 'user_settings' to match what exclusions.html expects
     return templates.TemplateResponse("exclusions.html", {
         "request": request,
-        "settings": user_settings
+        "user_settings": settings
     })
 
 @router.post("/save")
@@ -21,14 +22,14 @@ async def save_exclusions(
     custom_folders: str = Form(""),
     plexcache_file_path: str = Form("/mnt/user/appdata/plexcache/plexcache")
 ):
-    user_settings = get_user_settings()
+    settings = get_user_settings()
     
     # Split folders by newline and clean them
     folder_list = [f.strip() for f in custom_folders.split("\n") if f.strip()]
     
-    user_settings.exclusions.custom_folders = folder_list
-    user_settings.exclusions.plexcache_file_path = plexcache_file_path
+    settings.exclusions.custom_folders = folder_list
+    settings.exclusions.plexcache_file_path = plexcache_file_path
     
-    save_user_settings(user_settings)
+    save_user_settings(settings)
     logger.info("Exclusion settings saved")
     return RedirectResponse(url="/exclusions/?success=true", status_code=303)
