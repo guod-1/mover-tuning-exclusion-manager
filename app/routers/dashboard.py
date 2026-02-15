@@ -20,14 +20,17 @@ async def dashboard(request: Request):
     
     # Format mover status string
     status_text = "No logs found"
+    last_check = "N/A"
     if mover_stats:
         status_text = f"{mover_stats['excluded']} Excluded / {mover_stats['moved']} Moved"
+        last_check = datetime.datetime.fromtimestamp(mover_stats['timestamp']).strftime('%Y-%m-%d %H:%M')
 
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
         "ca_mover_status": status_text,
         "exclusion_count": excl_stats.get("total_count", 0),
-        "last_run_mover": datetime.datetime.fromtimestamp(mover_stats['timestamp']).strftime('%Y-%m-%d %H:%M') if mover_stats else "N/A",
-        "radarr_connected": True, # You can add actual health check logic here
-        "sonarr_connected": True
+        "last_run_mover": last_check,
+        "radarr_sync": settings.radarr.last_sync or "Never",
+        "sonarr_sync": settings.sonarr.last_sync or "Never",
+        "last_build": settings.exclusions.last_build or "Never"
     })
