@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 import logging
 from pathlib import Path
 
-from app.core.config import settings
+from app.core.config import settings, get_user_settings
 from app.core.scheduler import scheduler
 from app.routers import dashboard, settings as settings_router, movies, logs, operations
 
@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    user_settings = get_user_settings()
     """Lifespan context manager for startup and shutdown events"""
     # Startup
     logger.info("Starting Radarr Cache Manager...")
@@ -38,7 +39,7 @@ async def lifespan(app: FastAPI):
     logger.info(f"Scripts directory: {settings.scripts_dir}")
     
     # Start scheduler if enabled
-    if settings.scheduler_enabled:
+    if user_settings.scheduler.enabled:
         scheduler.start()
         logger.info("Scheduler started")
     
