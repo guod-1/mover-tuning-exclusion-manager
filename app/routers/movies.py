@@ -27,9 +27,9 @@ async def movies_page(request: Request):
     
     # Only fetch movies if tag operation is configured
     movies = []
-    if user_settings.tag_operation.search_tag_id:
+    if user_settings.radarr_tag_operation.search_tag_id:
         try:
-            movie_ids = radarr_client.get_movie_ids_by_tag(user_settings.tag_operation.search_tag_id)
+            movie_ids = radarr_client.get_movie_ids_by_tag(user_settings.radarr_tag_operation.search_tag_id)
             
             for movie_id in movie_ids[:50]:  # Limit to 50 for now
                 try:
@@ -69,11 +69,11 @@ async def get_movies_api():
     user_settings = get_user_settings()
     radarr_client = get_radarr_client()
     
-    if not user_settings.tag_operation.search_tag_id:
+    if not user_settings.radarr_tag_operation.search_tag_id:
         return {"success": False, "error": "No search tag configured"}
     
     try:
-        movie_ids = radarr_client.get_movie_ids_by_tag(user_settings.tag_operation.search_tag_id)
+        movie_ids = radarr_client.get_movie_ids_by_tag(user_settings.radarr_tag_operation.search_tag_id)
         
         movies = []
         for movie_id in movie_ids:

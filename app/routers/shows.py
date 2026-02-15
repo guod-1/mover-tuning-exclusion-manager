@@ -26,7 +26,7 @@ async def shows_page(request: Request):
     sonarr_client = get_sonarr_client()
     
     shows = []
-    tag_id = user_settings.tag_operation.search_tag_id
+    tag_id = user_settings.sonarr_tag_operation.search_tag_id
     
     if tag_id:
         try:
