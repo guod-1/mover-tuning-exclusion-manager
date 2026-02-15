@@ -15,7 +15,7 @@ from pathlib import Path
 
 from app.core.config import settings, get_user_settings
 from app.core.scheduler import scheduler
-from app.routers import dashboard, settings as settings_router, movies, logs, operations
+from app.routers import dashboard, settings as settings_router, movies, logs, operations, exclusions
 
 # Set up logging
 logging.basicConfig(
@@ -71,6 +71,7 @@ app.include_router(settings_router.router, prefix="/settings", tags=["settings"]
 app.include_router(movies.router, prefix="/movies", tags=["movies"])
 app.include_router(logs.router, prefix="/logs", tags=["logs"])
 app.include_router(operations.router, prefix="/operations", tags=["operations"])
+app.include_router(exclusions.router, prefix="/exclusions", tags=["exclusions"])
 
 @app.get("/health")
 async def health_check():
