@@ -1,53 +1,45 @@
+import os
+import glob
 import logging
 from pathlib import Path
-from datetime import datetime
-from app.core.config import get_user_settings, save_user_settings
 
 logger = logging.getLogger(__name__)
 
-class CAMoverMonitor:
-    def __init__(self):
-        # Default Unraid syslog location
-        self.log_file = Path("/var/log/syslog") 
+class MoverLogParser:
+    def __init__(self, log_dir="/mover_logs"):
+        self.log_dir = log_dir
 
-    def parse_log(self):
-        """
-        Parses the syslog for Mover Tuning entries.
-        Looking for: 'Mover Tuning: ...'
-        """
-        stats = {
-            "status": "No logs found",
-            "files_moved": 0,
-            "files_excluded": 0,
-            "last_check": "Never"
-        }
-
-        # Update Last Run Timestamp
+    def get_latest_stats(self):
         try:
-            settings = get_user_settings()
-            settings.last_run.mover_check = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            save_user_settings(settings)
-            stats["last_check"] = settings.last_run.mover_check
-        except Exception:
-            pass
+            # Find the most recent log file in the directory
+            list_of_files = glob.glob(f'{self.log_dir}/*.log')
+            if not list_of_files:
+                return None
 
-        if not self.log_file.exists():
-            logger.warning(f"Log file not found: {self.log_file}")
-            return stats
-
-        try:
-            # Simple simulation of log parsing since we can't easily grep huge syslogs in Python efficiently 
-            # without tailing. For now, we assume the dashboard just wants to know we checked.
-            # In a real scenario, you'd likely want to read the last N lines.
+            latest_file = max(list_of_files, key=os.path.getctime)
             
-            # Placeholder for actual log parsing logic
-            # If you have specific log lines you want to count, we can add regex here.
-            stats["status"] = "Checked"
+            stats = {
+                "filename": os.path.basename(latest_file),
+                "excluded": 0,
+                "moved": 0,
+                "errors": 0,
+                "timestamp": os.path.getmtime(latest_file)
+            }
+
+            with open(latest_file, 'r') as f:
+                for line in f:
+                    # Mover Tuning specific strings
+                    if "skipping" in line.lower() or "not moving" in line.lower():
+                        stats["excluded"] += 1
+                    elif "moving" in line.lower() and "skipping" not in line.lower():
+                        stats["moved"] += 1
+                    elif "error" in line.lower():
+                        stats["errors"] += 1
             
             return stats
         except Exception as e:
-            logger.error(f"Error parsing logs: {e}")
-            return stats
+            logger.error(f"Failed to parse mover logs: {e}")
+            return None
 
-def get_ca_mover_monitor():
-    return CAMoverMonitor()
+def get_mover_parser():
+    return MoverLogParser()
