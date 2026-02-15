@@ -12,6 +12,7 @@ from pathlib import Path
 
 from app.core.config import get_settings, get_user_settings
 from app.services.exclusions import get_exclusion_manager
+from app.services.radarr import get_radarr_client
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,15 @@ async def exclusions_page(request: Request):
     settings = get_settings()
     user_settings = get_user_settings()
     exclusion_manager = get_exclusion_manager()
+    radarr_client = get_radarr_client()
+    
+    # Get available tags from Radarr
+    tags = []
+    try:
+        if user_settings.radarr.api_key:
+            tags = radarr_client.get_all_tags()
+    except Exception as e:
+        logger.error(f"Failed to fetch tags: {e}")
     
     # Read exclusions file
     exclusions = []
@@ -41,6 +51,8 @@ async def exclusions_page(request: Request):
     
     context = {
         "request": request,
+        "user_settings": user_settings,
+        "tags": tags,
         "exclusions": exclusions,
         "total": stats['total'],
         "files": stats['files'],
