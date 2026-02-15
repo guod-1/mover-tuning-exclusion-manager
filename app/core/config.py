@@ -13,6 +13,10 @@ class SonarrTagOperation(BaseModel):
     tag_id: int
     action: str
 
+class SchedulerSettings(BaseModel):
+    enabled: bool = True
+    cron_expression: str = "0 */6 * * *"
+
 class ExclusionSettings(BaseModel):
     custom_folders: List[str] = []
     exclude_tag_ids: List[int] = []
@@ -33,6 +37,7 @@ class UserSettings(BaseModel):
     radarr: RadarrSettings = RadarrSettings()
     sonarr: SonarrSettings = SonarrSettings()
     exclusions: ExclusionSettings = ExclusionSettings()
+    scheduler: SchedulerSettings = SchedulerSettings()
 
 def get_user_settings() -> UserSettings:
     if os.path.exists(CONFIG_PATH):
