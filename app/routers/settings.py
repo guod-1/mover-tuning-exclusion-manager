@@ -1,5 +1,5 @@
 """
-Settings Router - Complete rebuild with all endpoints
+Settings Router - Fixed to handle empty form values
 """
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -88,31 +88,43 @@ async def test_sonarr():
 
 @router.post("/radarr-tags")
 async def update_radarr_tags(
-    radarr_search_tag_id: Optional[int] = Form(None),
-    radarr_replace_tag_id: Optional[int] = Form(None)
+    radarr_search_tag_id: str = Form(""),
+    radarr_replace_tag_id: str = Form("")
 ):
+    """Update Radarr tags - handles empty strings"""
     user_settings = get_user_settings()
+    
+    # Convert empty strings to None
+    search_id = int(radarr_search_tag_id) if radarr_search_tag_id and radarr_search_tag_id.strip() else None
+    replace_id = int(radarr_replace_tag_id) if radarr_replace_tag_id and radarr_replace_tag_id.strip() else None
+    
     user_settings.radarr_tag_operation = RadarrTagOperation(
-        search_tag_id=radarr_search_tag_id,
-        replace_tag_id=radarr_replace_tag_id
+        search_tag_id=search_id,
+        replace_tag_id=replace_id
     )
     save_user_settings(user_settings)
-    logger.info(f"Radarr tags updated: search={radarr_search_tag_id}, replace={radarr_replace_tag_id}")
+    logger.info(f"Radarr tags updated: search={search_id}, replace={replace_id}")
     return RedirectResponse(url="/settings/?success=radarr_tags", status_code=303)
 
 
 @router.post("/sonarr-tags")
 async def update_sonarr_tags(
-    sonarr_search_tag_id: Optional[int] = Form(None),
-    sonarr_replace_tag_id: Optional[int] = Form(None)
+    sonarr_search_tag_id: str = Form(""),
+    sonarr_replace_tag_id: str = Form("")
 ):
+    """Update Sonarr tags - handles empty strings"""
     user_settings = get_user_settings()
+    
+    # Convert empty strings to None
+    search_id = int(sonarr_search_tag_id) if sonarr_search_tag_id and sonarr_search_tag_id.strip() else None
+    replace_id = int(sonarr_replace_tag_id) if sonarr_replace_tag_id and sonarr_replace_tag_id.strip() else None
+    
     user_settings.sonarr_tag_operation = SonarrTagOperation(
-        search_tag_id=sonarr_search_tag_id,
-        replace_tag_id=sonarr_replace_tag_id
+        search_tag_id=search_id,
+        replace_tag_id=replace_id
     )
     save_user_settings(user_settings)
-    logger.info(f"Sonarr tags updated: search={sonarr_search_tag_id}, replace={sonarr_replace_tag_id}")
+    logger.info(f"Sonarr tags updated: search={search_id}, replace={replace_id}")
     return RedirectResponse(url="/settings/?success=sonarr_tags", status_code=303)
 
 
