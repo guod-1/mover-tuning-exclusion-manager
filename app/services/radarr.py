@@ -37,7 +37,7 @@ class RadarrClient:
             kwargs.pop('headers')
         
         try:
-            response = requests.request(method, url, headers=headers, **kwargs)
+            response = requests.request(method, url, headers=headers, timeout=5, **kwargs)
             response.raise_for_status()
             return response
         except requests.RequestException as e:
