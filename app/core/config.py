@@ -7,7 +7,7 @@ Settings are stored in settings.json and can be updated via the web UI.
 
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
-from typing import Optional, Literal
+from typing import Optional, Literal, List
 from pathlib import Path
 import json
 import os
