@@ -28,8 +28,8 @@
 
         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border-l-4 border-blue-500">
             <h3 class="text-sm font-medium text-gray-500 uppercase">Total Space Kept</h3>
-            <p class="mt-2 text-3xl font-bold text-blue-600">{{ 0 | filesize }}</p>
-            <p class="text-xs text-gray-400 mt-1">Estimated Cache savings</p>
+            <p class="mt-2 text-3xl font-bold text-blue-600">{{ bytes_kept | filesize }}</p>
+            <p class="text-xs text-gray-400 mt-1">Actual Cache savings</p>
         </div>
     </div>
 

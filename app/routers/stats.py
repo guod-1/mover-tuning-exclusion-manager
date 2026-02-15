@@ -10,14 +10,13 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-# Filter for readable dates
 def format_datetime(value):
     if value is None: return "N/A"
     return datetime.datetime.fromtimestamp(value).strftime('%Y-%m-%d %H:%M')
 
-# Filter for readable file sizes
 def format_filesize(value):
     if value is None: return "0 B"
+    # Convert bytes to human readable format
     for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
         if value < 1024.0:
             return f"{value:3.1f} {unit}"
@@ -38,5 +37,6 @@ async def stats_page(request: Request):
     return templates.TemplateResponse("stats.html", {
         "request": request,
         "mover": mover_stats,
-        "exclusions": excl_stats
+        "exclusions": excl_stats,
+        "bytes_kept": mover_stats.get('total_bytes_kept', 0) if mover_stats else 0
     })
