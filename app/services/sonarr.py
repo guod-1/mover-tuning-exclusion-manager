@@ -35,6 +35,19 @@ class SonarrClient:
             logger.error(f"Failed to fetch shows from Sonarr: {e}")
             return []
 
+    def get_episode_files(self, series_id):
+        """Fetch all existing episode files for a specific series"""
+        if not self.url or not self.api_key:
+            return []
+        try:
+            # This endpoint returns only files that actually exist on disk
+            response = requests.get(f"{self.url}/api/v3/episodefile?seriesId={series_id}", headers=self._get_headers(), timeout=30)
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Failed to fetch episode files for series {series_id}: {e}")
+            return []
+
     def get_all_tags(self):
         """Fetch all tags"""
         if not self.url or not self.api_key:
@@ -46,17 +59,6 @@ class SonarrClient:
         except Exception as e:
             logger.error(f"Failed to fetch tags from Sonarr: {e}")
             return []
-
-    def update_show(self, show_data):
-        """Update a show entry"""
-        try:
-            sid = show_data.get('id')
-            response = requests.put(f"{self.url}/api/v3/series/{sid}", json=show_data, headers=self._get_headers())
-            response.raise_for_status()
-            return True
-        except Exception as e:
-            logger.error(f"Failed to update show {show_data.get('title')}: {e}")
-            return False
 
 def get_sonarr_client():
     return SonarrClient()

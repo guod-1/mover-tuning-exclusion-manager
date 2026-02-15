@@ -60,37 +60,36 @@ class ExclusionManager:
                 logger.error(f"Error reading PlexCache file: {e}")
 
         # ---------------------------------------------------------
-        # C. Exclude Movies by Tag (Radarr)
+        # C. Gather Target Tags
         # ---------------------------------------------------------
-        # 1. Gather all tags we want to exclude (Set logic for speed)
         target_tags = set(self.settings.exclusions.exclude_tag_ids)
-        
-        # 2. Also include the 'Search Tag' from the Operations tab if set
         if self.settings.radarr_tag_operation.search_tag_id:
             target_tags.add(self.settings.radarr_tag_operation.search_tag_id)
 
+        # ---------------------------------------------------------
+        # D. Exclude Movies by Tag (Radarr)
+        # ---------------------------------------------------------
         if target_tags:
             try:
                 radarr = get_radarr_client()
                 movies = radarr.get_all_movies()
                 count = 0
                 for m in movies:
-                    # Check if movie has ANY of our target tags
                     m_tags = m.get('tags', [])
-                    if any(t in target_tags for t in m_tags):
-                        path = m.get('path')
-                        if path:
-                            all_paths.add(self._normalize_path(path))
+                    # Check if tagged AND has a file
+                    if m.get('hasFile') and any(t in target_tags for t in m_tags):
+                        movie_file = m.get('movieFile')
+                        if movie_file and 'path' in movie_file:
+                            full_path = movie_file['path']
+                            all_paths.add(self._normalize_path(full_path))
                             count += 1
-                logger.info(f"Found {count} movies matching exclusion tags: {target_tags}")
+                logger.info(f"Found {count} existing movie files matching exclusion tags")
             except Exception as e:
                 logger.error(f"Radarr exclusion fetch failed: {e}")
 
         # ---------------------------------------------------------
-        # D. Exclude Shows by Tag (Sonarr)
+        # E. Exclude Shows by Tag (Sonarr)
         # ---------------------------------------------------------
-        # Assuming the same tag IDs might apply, or we check if user wants this feature later.
-        # For now, we reuse the same list but check Sonarr connections.
         if target_tags:
             try:
                 sonarr = get_sonarr_client()
@@ -99,14 +98,15 @@ class ExclusionManager:
                 for s in shows:
                     s_tags = s.get('tags', [])
                     if any(t in target_tags for t in s_tags):
-                        path = s.get('path')
-                        if path:
-                            all_paths.add(self._normalize_path(path))
-                            count += 1
-                logger.info(f"Found {count} shows matching exclusion tags")
+                        # Fetch specific episode files for this show
+                        ep_files = sonarr.get_episode_files(s['id'])
+                        for ep in ep_files:
+                            if 'path' in ep:
+                                all_paths.add(self._normalize_path(ep['path']))
+                                count += 1
+                logger.info(f"Found {count} existing episode files matching exclusion tags")
             except Exception as e:
-                # Silent fail if Sonarr isn't configured, that's fine
-                pass
+                logger.error(f"Sonarr exclusion fetch failed: {e}")
 
         # ---------------------------------------------------------
         # Write fresh file
