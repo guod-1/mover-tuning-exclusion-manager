@@ -17,9 +17,14 @@ def run_radarr_tag_operation() -> Dict[str, Any]:
     user_settings = get_user_settings()
     radarr_client = get_radarr_client()
     
-    search_tag_id = user_settings.radarr_tag_operation.search_tag_id
-    replace_tag_id = user_settings.radarr_tag_operation.replace_tag_id
+    search_tag_id = user_settings.radarr.search_tag_id if hasattr(user_settings.radarr, 'search_tag_id') else None
+    replace_tag_id = user_settings.radarr.replace_tag_id if hasattr(user_settings.radarr, 'replace_tag_id') else None
     
+    # Fallback to older config structure if needed or handle graceful failure
+    if not search_tag_id and hasattr(user_settings, 'radarr_tag_operation'):
+         search_tag_id = user_settings.radarr_tag_operation.search_tag_id
+         replace_tag_id = user_settings.radarr_tag_operation.replace_tag_id
+
     if not search_tag_id:
         return {"success": False, "message": "No search tag configured"}
     
@@ -54,8 +59,13 @@ def run_sonarr_tag_operation() -> Dict[str, Any]:
     user_settings = get_user_settings()
     sonarr_client = get_sonarr_client()
     
-    search_tag_id = user_settings.sonarr_tag_operation.search_tag_id
-    replace_tag_id = user_settings.sonarr_tag_operation.replace_tag_id
+    search_tag_id = user_settings.sonarr.search_tag_id if hasattr(user_settings.sonarr, 'search_tag_id') else None
+    replace_tag_id = user_settings.sonarr.replace_tag_id if hasattr(user_settings.sonarr, 'replace_tag_id') else None
+
+    # Fallback
+    if not search_tag_id and hasattr(user_settings, 'sonarr_tag_operation'):
+         search_tag_id = user_settings.sonarr_tag_operation.search_tag_id
+         replace_tag_id = user_settings.sonarr_tag_operation.replace_tag_id
     
     if not search_tag_id:
         return {"success": False, "message": "No search tag configured"}
@@ -90,16 +100,15 @@ def run_exclusion_builder() -> Dict[str, Any]:
     """Build exclusions from all sources"""
     try:
         exclusion_manager = get_exclusion_manager()
-        # FIX: Updated method name from combine_exclusions to build_exclusions
         result = exclusion_manager.build_exclusions()
         return {"success": True, **result}
     except Exception as e:
         logger.error(f"Exclusion builder failed: {e}")
         return {"success": False, "message": str(e)}
 
-def run_full_operation() -> Dict[str, Any]:
+def run_full_sync() -> Dict[str, Any]:
     """Run complete operation: Radarr tags + Sonarr tags + build exclusions"""
-    logger.info("=== Starting Full Operation ===")
+    logger.info("=== Starting Full Sync Operation ===")
     
     radarr_result = run_radarr_tag_operation()
     sonarr_result = run_sonarr_tag_operation()
