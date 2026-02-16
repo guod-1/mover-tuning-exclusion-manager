@@ -19,7 +19,7 @@ async def dashboard_page(request: Request):
         "cache_usage": mover_parser.get_cache_usage(),
         "exclusion_count": (exclusion_manager.get_exclusion_stats() or {}).get("total_count", 0),
         "radarr_online": True,
-        "sonarr_online": True,
+        "sonarr_online": True, "mover_running": False,
         "check_time": datetime.datetime.now().strftime("%H:%M:%S")
     })
 
