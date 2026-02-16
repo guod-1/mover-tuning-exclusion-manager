@@ -14,7 +14,7 @@ class ExclusionSettings(BaseModel):
     radarr_exclude_tag_ids: List[int] = []
     sonarr_exclude_tag_ids: List[int] = []
     plexcache_file_path: str = "/plexcache/unraid_mover_exclusions.txt"
-    ca_mover_log_path: str = "/config/logs/mover.log"
+    ca_mover_log_path: str = "/mover_logs/ca.mover.tuning.log"
     # Configurable Paths
     cache_mount_path: str = "/mnt/cache"
     movie_base_path: str = "/mnt/cache/data/media/movies/"
