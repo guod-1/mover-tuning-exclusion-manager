@@ -13,8 +13,7 @@ class MoverLogParser:
     def get_cache_usage(self):
         """Calculates disk usage for the cache drive mount point"""
         try:
-            # We target /mnt/chloe as defined in your docker-compose volumes
-            # We use os.path.realpath to ensure we are looking at the actual mount
+            # Targets the mount point /mnt/chloe from docker-compose
             path = "/mnt/chloe"
             if not os.path.exists(path):
                 logger.error(f"Path {path} does not exist for usage check")
@@ -33,6 +32,7 @@ class MoverLogParser:
             return {"total": 1, "used": 0, "free": 0, "percent": 0}
 
     def get_latest_stats(self):
+        """Compatibility wrapper for standard stats parser"""
         try:
             list_of_files = glob.glob(f'{self.log_dir}/Filtered_files_*.list')
             if not list_of_files:
@@ -41,6 +41,7 @@ class MoverLogParser:
             
             latest_file = max(list_of_files, key=os.path.getctime)
             
+            # Identify most recent log that processed data (True Run)
             run_file = None
             for f in sorted(list_of_files, key=os.path.getctime, reverse=True):
                 if os.path.getsize(f) > 500:
