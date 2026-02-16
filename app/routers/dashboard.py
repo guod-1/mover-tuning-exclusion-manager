@@ -6,6 +6,7 @@ from app.services.exclusions import get_exclusion_manager
 from app.services.radarr import get_radarr_client
 from app.services.sonarr import get_sonarr_client
 import datetime
+import os
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -30,11 +31,19 @@ async def dashboard(request: Request):
         status_text = f"{mover_stats['excluded']} Excluded / {mover_stats['moved']} Moved"
         last_check = datetime.datetime.fromtimestamp(mover_stats['timestamp']).strftime('%Y-%m-%d %H:%M')
     
+    # Get last build time from mover_exclusions.txt file modification time
+    last_build = "Never"
+    exclusions_file = "/config/mover_exclusions.txt"
+    if os.path.exists(exclusions_file):
+        mtime = os.path.getmtime(exclusions_file)
+        last_build = datetime.datetime.fromtimestamp(mtime).strftime('%Y-%m-%d %H:%M')
+    
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
         "radarr_connected": radarr_connected,
         "sonarr_connected": sonarr_connected,
         "ca_mover_status": status_text,
         "exclusion_count": excl_stats.get("total_count", 0),
-        "last_run_mover": last_check
+        "last_run_mover": last_check,
+        "last_build": last_build
     })
