@@ -47,12 +47,19 @@ async def save_sonarr(url: str = Form(...), api_key: str = Form(...)):
     return RedirectResponse(url=f"/settings?sonarr_status={status}", status_code=303)
 
 @router.post("/paths/save")
-async def save_paths(movie_base_path: str = Form(...), tv_base_path: str = Form(...)):
+async def save_paths(
+    movie_base_path: str = Form(...), 
+    tv_base_path: str = Form(...),
+    ca_mover_log_path: str = Form(...),
+    plexcache_file_path: str = Form(...)
+):
     settings = get_user_settings()
     settings.exclusions.movie_base_path = movie_base_path
     settings.exclusions.tv_base_path = tv_base_path
+    settings.exclusions.ca_mover_log_path = ca_mover_log_path
+    settings.exclusions.plexcache_file_path = plexcache_file_path
     save_user_settings(settings)
-    logger.info(f"Path normalization updated: {movie_base_path}, {tv_base_path}")
+    logger.info("System paths and CA Mover configuration updated")
     return RedirectResponse(url="/settings?status=success", status_code=303)
 
 @router.post("/automation/save")
