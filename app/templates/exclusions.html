@@ -1,62 +1,131 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="max-w-4xl mx-auto space-y-8 pb-12">
-    <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Exclusion Management</h2>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">Exclusion Management</h1>
 
-    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
-        <h3 class="text-lg font-medium mb-4">Exclude via Tags</h3>
-        <form action="/exclusions/tags/add" method="POST" class="flex items-end space-x-4">
-            <div class="flex-1">
-                <select name="tag_id" class="mt-1 block w-full bg-white dark:bg-gray-700 border border-gray-300 rounded-md py-2 px-3 text-gray-900 dark:text-gray-100">
-                    <option value="">-- Select a tag --</option>
-                    {% for tag in radarr_tags %}<option value="{{ tag.id }}">{{ tag.label }} (Radarr)</option>{% endfor %}
-                    {% for tag in sonarr_tags %}<option value="{{ tag.id }}">{{ tag.label }} (Sonarr)</option>{% endfor %}
-                </select>
-            </div>
-            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Add Tag</button>
-        </form>
-        <div class="mt-4 flex flex-wrap gap-2">
-            {% for tag_id in user_settings.exclusions.exclude_tag_ids %}
-            <form action="/exclusions/tags/remove" method="POST" class="inline">
-                <input type="hidden" name="tag_id" value="{{ tag_id }}">
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                    ID: {{ tag_id }} <button type="submit" class="ml-2">&times;</button>
-                </span>
-            </form>
-            {% endfor %}
-        </div>
+    {% if request.query_params.get('success') %}
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
+        Settings saved successfully!
     </div>
+    {% endif %}
 
-    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg p-6">
-        <h3 class="text-lg font-medium mb-4">Manual Paths & PlexCache</h3>
-        <form action="/exclusions/save" method="POST" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium">PlexCache File Path</label>
-                <input type="text" name="plexcache_file_path" value="{{ user_settings.exclusions.plexcache_file_path }}" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 rounded-md py-2 px-3">
-            </div>
-            <div>
-                <label class="block text-sm font-medium">Custom Folders (one per line)</label>
-                <textarea name="custom_folders" rows="3" class="mt-1 block w-full bg-gray-50 dark:bg-gray-700 border border-gray-300 rounded-md py-2 px-3">{{ user_settings.exclusions.custom_folders | join('\n') }}</textarea>
-            </div>
-            <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded">Save Path Settings</button>
-        </form>
-    </div>
-
-    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:px-6 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Current Exclusion File Content</h3>
-            <span class="text-sm text-gray-500">{{ current_exclusions | length }} Paths Found</span>
-        </div>
-        <div class="p-0">
-            <div class="max-h-96 overflow-y-auto bg-gray-900 text-green-400 p-4 font-mono text-xs">
-                {% if current_exclusions %}
-                    {% for line in current_exclusions %}
-                        <div class="border-b border-gray-800 py-1">{{ line }}</div>
+    <form action="/exclusions/settings" method="post">
+        <div class="space-y-6">
+            
+            <!-- Radarr Tag Exclusions -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Radarr Tag Exclusions</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Movies with these tags will be excluded from the Unraid mover
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {% for tag in tags %}
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               name="radarr_exclude_tag_ids" 
+                               value="{{ tag.id }}"
+                               {% if tag.id in user_settings.exclusions.radarr_exclude_tag_ids %}checked{% endif %}
+                               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                            {{ tag.label }} <span class="text-gray-500">(ID: {{ tag.id }})</span>
+                        </label>
+                    </div>
                     {% endfor %}
-                {% else %}
-                    <div class="text-gray-500 italic">No exclusions generated yet. Go to the Dashboard and click "Build Exclusion File Now".</div>
-                {% endif %}
+                </div>
             </div>
+
+            <!-- Sonarr Tag Exclusions -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Sonarr Tag Exclusions</h2>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    TV shows with these tags will be excluded from the Unraid mover
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {% for tag in sonarr_tags %}
+                    <div class="flex items-center">
+                        <input type="checkbox" 
+                               name="sonarr_exclude_tag_ids" 
+                               value="{{ tag.id }}"
+                               {% if tag.id in user_settings.exclusions.sonarr_exclude_tag_ids %}checked{% endif %}
+                               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                        <label class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                            {{ tag.label }} <span class="text-gray-500">(ID: {{ tag.id }})</span>
+                        </label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- PlexCache-D File -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">PlexCache-D Integration</h2>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    PlexCache-D Exclusions File Path
+                </label>
+                <input type="text" 
+                       name="plexcache_file_path" 
+                       value="{{ user_settings.exclusions.plexcache_file_path }}"
+                       class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 font-mono text-sm text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500">
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Path to PlexCache-D's unraid_mover_exclusions.txt file
+                </p>
+            </div>
+
+            <!-- CA Mover Tuning Log Path -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">CA Mover Tuning</h2>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    CA Mover Tuning Log Path
+                </label>
+                <input type="text" 
+                       name="ca_mover_log_path" 
+                       value="{{ user_settings.exclusions.ca_mover_log_path }}"
+                       class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 font-mono text-sm text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500">
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Path to CA Mover Tuning log directory (ca.mover.tuning folder)
+                </p>
+            </div>
+
+            <!-- Custom Folders -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Custom Folders</h2>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Additional Folders to Exclude (one per line)
+                </label>
+                <textarea name="custom_folders" 
+                          rows="5"
+                          class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 font-mono text-sm text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500">{{ '\n'.join(user_settings.exclusions.custom_folders) }}</textarea>
+                <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    Enter full paths, one per line (e.g., /mnt/chloe/data/media/movies/Movie Name)
+                </p>
+            </div>
+
+            <!-- Save Button -->
+            <div class="flex justify-end">
+                <button type="submit" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded shadow">
+                    Save All Settings
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Current Exclusions Viewer -->
+    <div class="mt-8 bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                Current Exclusion File
+            </h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                {{ stats.total_count }} total exclusions
+            </p>
+        </div>
+        <div class="p-4 bg-gray-900 max-h-96 overflow-y-auto">
+            <pre class="text-green-400 font-mono text-xs">{% for exclusion in exclusions %}{{ exclusion }}
+{% endfor %}</pre>
         </div>
     </div>
 </div>
