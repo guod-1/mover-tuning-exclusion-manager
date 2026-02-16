@@ -56,7 +56,6 @@ class ExclusionManager:
         sonarr_tags = set(settings.exclusions.sonarr_exclude_tag_ids)
         if sonarr_tags:
             try:
-                # FIXED: Changed from get_all_shows to get_all_series
                 shows = get_sonarr_client().get_all_series()
                 for s in shows:
                     if any(t in sonarr_tags for t in s.get('tags', [])):
@@ -72,7 +71,6 @@ class ExclusionManager:
                 f.write(f"{path}\n")
         
         # Update timestamp
-        # FIXED: This line was missing, causing the crash
         settings.exclusions.last_build = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         save_user_settings(settings)
         
@@ -83,6 +81,12 @@ class ExclusionManager:
         if not self.output_file.exists(): return {"total_count": 0}
         with open(self.output_file, 'r') as f:
             return {"total_count": len([l for l in f if l.strip()])}
+
+    def get_all_exclusions(self):
+        """Returns list of all exclusions for the viewer"""
+        if not self.output_file.exists(): return []
+        with open(self.output_file, 'r') as f:
+            return [line.strip() for line in f if line.strip()]
 
 def get_exclusion_manager():
     return ExclusionManager()
