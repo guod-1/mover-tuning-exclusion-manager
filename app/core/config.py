@@ -5,13 +5,9 @@ from typing import List, Optional
 
 CONFIG_PATH = "/config/settings.json"
 
-class RadarrTagOperation(BaseModel):
-    tag_id: int
-    action: str
 
-class SonarrTagOperation(BaseModel):
-    tag_id: int
-    action: str
+
+
 
 class SchedulerSettings(BaseModel):
     enabled: bool = True

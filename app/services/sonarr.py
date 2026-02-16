@@ -48,5 +48,20 @@ class SonarrClient:
             return response.json()
         except: return []
 
+
+    def get_all_series(self):
+        """Get all series from Sonarr"""
+        try:
+            response = requests.get(
+                f"{self.url}/api/v3/series",
+                headers=self.headers,
+                timeout=10
+            )
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Failed to get all series: {e}")
+            return []
+
 def get_sonarr_client():
     return SonarrClient()

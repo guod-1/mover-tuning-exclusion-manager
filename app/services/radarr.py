@@ -44,5 +44,20 @@ class RadarrClient:
             return True
         except: return False
 
+
+    def get_all_movies(self):
+        """Get all movies from Radarr"""
+        try:
+            response = requests.get(
+                f"{self.url}/api/v3/movie",
+                headers=self.headers,
+                timeout=10
+            )
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            logger.error(f"Failed to get all movies: {e}")
+            return []
+
 def get_radarr_client():
     return RadarrClient()
