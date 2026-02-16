@@ -28,7 +28,7 @@ async def refresh_stats(request: Request):
     # This specifically calls ONLY the partial file, skipping base.html
     mover_parser = get_mover_parser()
     stats = mover_parser.get_latest_stats()
-    return templates.TemplateResponse("partials/mover_stats_card.html", {
+    return templates.TemplateResponse("partials/mover_stats_slim.html", {
         "request": request, 
         "stats": stats, 
         "check_time": datetime.datetime.now().strftime("%H:%M:%S")
