@@ -9,7 +9,7 @@
         <div id="op-result-excl">
             <button hx-post="/operations/run/exclusions" 
                     hx-target="#op-result-excl" 
-                    class="bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center shadow-lg shadow-primary-900/20">
+                    class="bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center shadow-lg">
                 <i class="fa-solid fa-hammer mr-2"></i> Build Exclusions
             </button>
         </div>
@@ -18,9 +18,9 @@
     <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-2xl overflow-hidden">
         <div class="px-6 py-4 bg-gray-850 border-b border-gray-700 flex justify-between items-center">
             <h2 class="text-lg font-semibold text-white">Current Exclusion File</h2>
-            <span class="text-[10px] text-gray-500 bg-gray-900 px-2 py-1 rounded font-bold uppercase tracking-wider">{{ current_exclusions|length }} Items Found</span>
+            <span class="text-[10px] text-gray-500 bg-gray-900 px-2 py-1 rounded font-bold uppercase">{{ current_exclusions|length }} Items Found</span>
         </div>
-        <div class="max-h-[600px] overflow-y-auto">
+        <div class="max-h-[400px] overflow-y-auto">
             <table class="min-w-full divide-y divide-gray-800 bg-gray-900">
                 <thead class="sticky top-0 bg-gray-950 shadow-md z-10">
                     <tr class="text-left text-[11px] text-gray-500 uppercase font-bold">
@@ -31,17 +31,9 @@
                 <tbody class="divide-y divide-gray-800">
                     {% for path in current_exclusions %}
                     <tr class="hover:bg-gray-800/40 transition-colors group">
-                        <td class="px-6 py-3 text-xs text-gray-400 group-hover:text-gray-200 font-mono truncate max-w-4xl">
-                            {{ path }}
-                        </td>
+                        <td class="px-6 py-3 text-xs text-gray-400 group-hover:text-gray-200 font-mono truncate max-w-4xl">{{ path }}</td>
                         <td class="px-6 py-3 text-right">
                             <span class="text-[10px] font-bold text-primary-500 bg-primary-950/30 px-2 py-1 rounded border border-primary-900/50">PROTECTED</span>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="2" class="px-6 py-10 text-center text-gray-500 italic">
-                            No exclusions found. Click "Build Exclusions" to generate the list.
                         </td>
                     </tr>
                     {% endfor %}
@@ -50,5 +42,40 @@
         </div>
     </div>
 
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                <i class="fa-solid fa-film mr-2 text-primary-500"></i> Radarr Tags
+            </h3>
+            <form hx-post="/exclusions/tags/radarr" hx-target="#op-result-excl" class="space-y-4">
+                <div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 bg-gray-900 rounded border border-gray-700">
+                    {% for tag in radarr_tags %}
+                    <label class="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer hover:text-white">
+                        <input type="checkbox" name="tags" value="{{ tag.id }}" {% if tag.id in selected_radarr %}checked{% endif %} class="rounded border-gray-600 bg-gray-800 text-primary-600">
+                        <span>{{ tag.label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 text-white text-xs py-2 rounded transition">Update Radarr Tags</button>
+            </form>
+        </div>
+
+        <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
+            <h3 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center">
+                <i class="fa-solid fa-tv mr-2 text-primary-500"></i> Sonarr Tags
+            </h3>
+            <form hx-post="/exclusions/tags/sonarr" hx-target="#op-result-excl" class="space-y-4">
+                <div class="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto p-2 bg-gray-900 rounded border border-gray-700">
+                    {% for tag in sonarr_tags %}
+                    <label class="flex items-center space-x-2 text-sm text-gray-300 cursor-pointer hover:text-white">
+                        <input type="checkbox" name="tags" value="{{ tag.id }}" {% if tag.id in selected_sonarr %}checked{% endif %} class="rounded border-gray-600 bg-gray-800 text-primary-600">
+                        <span>{{ tag.label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 text-white text-xs py-2 rounded transition">Update Sonarr Tags</button>
+            </form>
+        </div>
     </div>
+</div>
 {% endblock %}
