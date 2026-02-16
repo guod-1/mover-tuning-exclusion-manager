@@ -16,16 +16,8 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg p-6 relative group">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Active Exclusions</h3>
-                <button hx-post="/operations/run/exclusions" 
-                        hx-target="#exclusion-val" 
-                        hx-swap="innerHTML"
-                        class="text-gray-500 hover:text-primary-400 transition-colors">
-                    <i class="fa-solid fa-arrows-rotate text-xs"></i>
-                </button>
-            </div>
+        <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg p-6">
+            <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Active Exclusions</h3>
             <div class="flex items-baseline">
                 <span id="exclusion-val" class="text-4xl font-bold text-white">{{ exclusion_count|default(0) }}</span>
                 <span class="ml-2 text-sm text-gray-500">on Cache</span>
@@ -34,10 +26,7 @@
         </div>
 
         <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Cache Usage</h3>
-                <i class="fa-solid fa-hard-drive text-orange-500"></i>
-            </div>
+            <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider mb-4">Cache Usage</h3>
             <div class="w-full bg-gray-900 rounded-full h-2.5 mb-2">
                 <div class="bg-orange-500 h-2.5 rounded-full" style="width: {{ cache_usage.percent|default(0) }}%"></div>
             </div>
@@ -47,41 +36,29 @@
             </div>
         </div>
 
-        <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg p-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Mover Status</h3>
-                <span class="flex h-3 w-3 relative">
-                    <span class=" absolute inline-flex h-full w-full rounded-full bg-slate-600 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-3 w-3 bg-slate-600"></span>
-                </span>
+        <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg p-5 space-y-3">
+            <div class="flex items-center justify-between border-b border-gray-700 pb-2 mb-1">
+                <span class="text-[10px] font-bold text-gray-500 uppercase">System Status</span>
+                <div class="flex items-center">
+                    <span class="h-2 w-2 rounded-full bg-slate-600 mr-2"></span>
+                    <span class="text-[10px] font-medium text-gray-400">MOVER IDLE</span>
+                </div>
             </div>
-            <p class="text-2xl font-bold text-white">IDLE</p>
-            <p class="text-xs text-gray-500 mt-1">Monitoring logs...</p>
+            <div class="grid grid-cols-2 gap-2">
+                <div class="flex items-center justify-between px-3 py-2 bg-gray-900 rounded-lg border border-gray-800">
+                    <span class="text-[11px] text-gray-400">Radarr</span>
+                    <span class="h-1.5 w-1.5 rounded-full {% if radarr_online %}bg-green-500{% else %}bg-red-500{% endif %}"></span>
+                </div>
+                <div class="flex items-center justify-between px-3 py-2 bg-gray-900 rounded-lg border border-gray-800">
+                    <span class="text-[11px] text-gray-400">Sonarr</span>
+                    <span class="h-1.5 w-1.5 rounded-full {% if sonarr_online %}bg-green-500{% else %}bg-red-500{% endif %}"></span>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 gap-8">
         {% include "partials/mover_stats_card.html" %}
-
-        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden shadow-lg">
-            <div class="px-6 py-4 border-b border-gray-700 bg-gray-850">
-                <h2 class="text-lg font-semibold text-white">Service Connections</h2>
-            </div>
-            <div class="p-6 space-y-4">
-                <div class="flex items-center justify-between p-3 bg-gray-900 rounded-lg">
-                    <span class="text-gray-200">Radarr</span>
-                    <span class="px-2 py-1 text-[10px] font-bold rounded {% if radarr_online %}bg-green-900/30 text-slate-400{% else %}bg-red-900/30 text-red-400{% endif %} uppercase">
-                        {% if radarr_online %}Online{% else %}Offline{% endif %}
-                    </span>
-                </div>
-                <div class="flex items-center justify-between p-3 bg-gray-900 rounded-lg">
-                    <span class="text-gray-200">Sonarr</span>
-                    <span class="px-2 py-1 text-[10px] font-bold rounded {% if sonarr_online %}bg-green-900/30 text-slate-400{% else %}bg-red-900/30 text-red-400{% endif %} uppercase">
-                        {% if sonarr_online %}Online{% else %}Offline{% endif %}
-                    </span>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}
