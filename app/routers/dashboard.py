@@ -12,15 +12,12 @@ templates = Jinja2Templates(directory="app/templates")
 async def dashboard_page(request: Request):
     mover_parser = get_mover_parser()
     exclusion_manager = get_exclusion_manager()
-    stats = mover_parser.get_latest_stats()
-    cache_usage = mover_parser.get_cache_usage()
-    exclusion_count = (exclusion_manager.get_exclusion_stats() or {}).get("total_count", 0)
     
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
-        "stats": stats,
-        "cache_usage": cache_usage,
-        "exclusion_count": exclusion_count,
+        "stats": mover_parser.get_latest_stats(),
+        "cache_usage": mover_parser.get_cache_usage(),
+        "exclusion_count": (exclusion_manager.get_exclusion_stats() or {}).get("total_count", 0),
         "radarr_online": True,
         "sonarr_online": True,
         "check_time": datetime.datetime.now().strftime("%H:%M:%S")
@@ -28,7 +25,7 @@ async def dashboard_page(request: Request):
 
 @router.get("/stats/refresh", response_class=HTMLResponse)
 async def refresh_stats(request: Request):
-    # This specifically calls ONLY the partial file
+    # This specifically calls ONLY the partial file, skipping base.html
     mover_parser = get_mover_parser()
     stats = mover_parser.get_latest_stats()
     return templates.TemplateResponse("partials/mover_stats_card.html", {
