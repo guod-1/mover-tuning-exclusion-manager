@@ -1,91 +1,80 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-6xl mx-auto space-y-6">
+<div class="max-w-6xl mx-auto space-y-6 pb-12">
     <h1 class="text-3xl font-bold text-white tracking-tight">Exclusion Management</h1>
 
     <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 shadow-lg">
         <h3 class="text-lg font-semibold text-white mb-4">Radarr Tag Exclusions</h3>
         <form action="/exclusions/radarr-tags/add" method="POST" class="space-y-4">
-            <label class="block text-sm font-medium text-gray-400 mb-1">Select Radarr Tag</label>
             <div class="flex gap-2">
-                <select name="tag_id" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-1 focus:ring-primary-500">
-                    <option value="">-- Select a tag --</option>
-                    {% for tag in tags %}
-                    <option value="{{ tag.id }}">{{ tag.label }}</option>
-                    {% endfor %}
+                <select name="tag_id" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none">
+                    <option value="">-- Select a Radarr Tag --</option>
+                    {% for tag in tags %}<option value="{{ tag.id }}">{{ tag.label }}</option>{% endfor %}
                 </select>
                 <button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white px-6 py-2 rounded-lg font-bold transition">Add</button>
             </div>
         </form>
         <div class="flex flex-wrap gap-2 mt-4">
-            {% for tag in tags %}
-                {% if tag.id in user_settings.exclusions.radarr_exclude_tag_ids %}
-                <form action="/exclusions/radarr-tags/remove" method="POST" class="inline">
-                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
-                    <button type="submit" class="bg-primary-900/40 text-primary-400 border border-primary-800/50 px-3 py-1 rounded-full text-xs flex items-center hover:bg-red-900/40 hover:text-red-400 transition">
-                        {{ tag.label }} <i class="fa-solid fa-xmark ml-2"></i>
-                    </button>
-                </form>
-                {% endif %}
-            {% endfor %}
+            {% for tag in tags %}{% if tag.id in user_settings.exclusions.radarr_exclude_tag_ids %}
+            <form action="/exclusions/radarr-tags/remove" method="POST" class="inline">
+                <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                <button type="submit" class="bg-primary-950/40 text-primary-400 border border-primary-800/50 px-3 py-1 rounded-full text-xs flex items-center hover:bg-red-900/40 hover:text-red-400 transition">
+                    {{ tag.label }} <i class="fa-solid fa-xmark ml-2"></i>
+                </button>
+            </form>
+            {% endif %}{% endfor %}
         </div>
     </div>
 
     <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 shadow-lg">
         <h3 class="text-lg font-semibold text-white mb-4">Sonarr Tag Exclusions</h3>
         <form action="/exclusions/sonarr-tags/add" method="POST" class="space-y-4">
-            <label class="block text-sm font-medium text-gray-400 mb-1">Select Sonarr Tag</label>
             <div class="flex gap-2">
-                <select name="tag_id" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none focus:ring-1 focus:ring-primary-500">
-                    <option value="">-- Select a tag --</option>
-                    {% for tag in sonarr_tags %}
-                    <option value="{{ tag.id }}">{{ tag.label }}</option>
-                    {% endfor %}
+                <select name="tag_id" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none">
+                    <option value="">-- Select a Sonarr Tag --</option>
+                    {% for tag in sonarr_tags %}<option value="{{ tag.id }}">{{ tag.label }}</option>{% endfor %}
                 </select>
                 <button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white px-6 py-2 rounded-lg font-bold transition">Add</button>
             </div>
         </form>
         <div class="flex flex-wrap gap-2 mt-4">
-            {% for tag in sonarr_tags %}
-                {% if tag.id in user_settings.exclusions.sonarr_exclude_tag_ids %}
-                <form action="/exclusions/sonarr-tags/remove" method="POST" class="inline">
-                    <input type="hidden" name="tag_id" value="{{ tag.id }}">
-                    <button type="submit" class="bg-primary-900/40 text-primary-400 border border-primary-800/50 px-3 py-1 rounded-full text-xs flex items-center hover:bg-red-900/40 hover:text-red-400 transition">
-                        {{ tag.label }} <i class="fa-solid fa-xmark ml-2"></i>
-                    </button>
-                </form>
-                {% endif %}
-            {% endfor %}
+            {% for tag in sonarr_tags %}{% if tag.id in user_settings.exclusions.sonarr_exclude_tag_ids %}
+            <form action="/exclusions/sonarr-tags/remove" method="POST" class="inline">
+                <input type="hidden" name="tag_id" value="{{ tag.id }}">
+                <button type="submit" class="bg-primary-950/40 text-primary-400 border border-primary-800/50 px-3 py-1 rounded-full text-xs flex items-center hover:bg-red-900/40 hover:text-red-400 transition">
+                    {{ tag.label }} <i class="fa-solid fa-xmark ml-2"></i>
+                </button>
+            </form>
+            {% endif %}{% endfor %}
         </div>
     </div>
 
     <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 shadow-lg">
-        <h3 class="text-lg font-semibold text-white mb-4">PlexCache-D Integration</h3>
-        <form action="/exclusions/plexcache" method="POST" class="space-y-4">
-            <input type="text" name="plexcache_file_path" value="{{ user_settings.exclusions.plexcache_file_path }}" 
-                   class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-sm outline-none focus:ring-1 focus:ring-primary-500">
-            <button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white px-6 py-2 rounded-lg font-bold transition shadow-lg shadow-primary-950/20">Save Path</button>
+        <h3 class="text-lg font-semibold text-white mb-2">PlexCache-D Integration</h3>
+        <p class="text-xs text-gray-500 mb-4 font-mono">Current path: {{ user_settings.exclusions.plexcache_file_path }}</p>
+        <form action="/exclusions/plexcache" method="POST" class="flex gap-2">
+            <input type="text" name="plexcache_file_path" value="{{ user_settings.exclusions.plexcache_file_path }}" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-sm outline-none">
+            <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition">Update Path</button>
         </form>
     </div>
 
     <div class="bg-gray-800 rounded-xl border border-gray-700 p-6 shadow-lg">
         <h3 class="text-lg font-semibold text-white mb-4">Custom Folders</h3>
         <form action="/exclusions/custom-folders" method="POST" class="space-y-4">
-            <textarea name="custom_folders" rows="6" 
-                      class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-sm outline-none focus:ring-1 focus:ring-primary-500">{% for folder in user_settings.exclusions.custom_folders %}{{ folder }}{{ "\n" if not loop.last }}{% endfor %}</textarea>
-            <button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white px-6 py-2 rounded-lg font-bold transition shadow-lg shadow-primary-950/20">Save Folders</button>
+            <textarea name="custom_folders" rows="5" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-sm outline-none">{% for folder in user_settings.exclusions.custom_folders %}{{ folder }}{{ "\n" if not loop.last }}{% endfor %}</textarea>
+            <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg transition">Save Custom Folders</button>
         </form>
     </div>
 
     <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-2xl overflow-hidden">
         <div class="px-6 py-4 bg-gray-850 border-b border-gray-700 flex justify-between items-center">
             <h2 class="text-lg font-semibold text-white">Current Exclusion File</h2>
-            <span class="text-xs text-gray-500">{{ exclusions|length }} items</span>
+            <span class="text-[10px] text-gray-500 bg-gray-900 px-2 py-1 rounded font-bold uppercase tracking-widest">{{ exclusions|length }} items</span>
         </div>
         <div class="max-h-[500px] overflow-y-auto">
             <table class="min-w-full divide-y divide-gray-800 bg-gray-900">
                 <thead class="sticky top-0 bg-gray-950 shadow-md">
-                    <tr class="text-left text-[11px] text-gray-500 uppercase font-bold">
+                    <tr class="text-left text-[11px] text-gray-500 uppercase font-bold tracking-wider">
                         <th class="px-6 py-4">Excluded Path</th>
                         <th class="px-6 py-4 text-right">Status</th>
                     </tr>
@@ -93,9 +82,9 @@
                 <tbody class="divide-y divide-gray-800">
                     {% for item in exclusions %}
                     <tr class="hover:bg-gray-800/40 transition-colors">
-                        <td class="px-6 py-3 text-[11px] text-gray-400 font-mono truncate">{{ item }}</td>
+                        <td class="px-6 py-3 text-[11px] text-gray-400 font-mono truncate max-w-4xl">{{ item }}</td>
                         <td class="px-6 py-3 text-right">
-                            <span class="text-[9px] font-bold text-primary-500 bg-primary-950/30 px-2 py-1 rounded border border-primary-900/50">PROTECTED</span>
+                            <span class="text-[9px] font-bold text-primary-500 bg-primary-950/30 px-2 py-0.5 rounded border border-primary-900/50">PROTECTED</span>
                         </td>
                     </tr>
                     {% endfor %}
