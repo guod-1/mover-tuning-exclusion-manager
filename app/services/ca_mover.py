@@ -17,8 +17,8 @@ class MoverLogParser:
             settings = get_user_settings()
             path = settings.exclusions.cache_mount_path
             
-            if not os.path.exists(path):
-                logger.error(f"Configured cache path {path} does not exist")
+            # Fail silently/gracefully if path doesn't exist to avoid log spam
+            if not path or not os.path.exists(path):
                 return {"total": 1, "used": 0, "free": 0, "percent": 0}
                 
             usage = shutil.disk_usage(path)
@@ -29,8 +29,8 @@ class MoverLogParser:
                 "free": usage.free,
                 "percent": round(percent, 1)
             }
-        except Exception as e:
-            logger.error(f"Failed to get cache usage: {e}")
+        except Exception:
+            # Suppress errors for dashboard cleanliness
             return {"total": 1, "used": 0, "free": 0, "percent": 0}
 
     def get_latest_stats(self):
