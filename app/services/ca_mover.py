@@ -5,6 +5,16 @@ from app.core.config import get_user_settings
 
 logger = logging.getLogger(__name__)
 
+def format_size(size_bytes):
+    if size_bytes == "Unknown": return "0 B"
+    try:
+        size = float(size_bytes)
+        for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+            if size < 1024.0:
+                return f"{size:.1f} {unit}"
+            size /= 1024.0
+    except: return "0 B"
+
 class MoverLogParser:
     def __init__(self, log_dir="/mover_logs"):
         self.log_dir = log_dir
@@ -39,7 +49,7 @@ class MoverLogParser:
             "excluded": 0,
             "moved": 0,
             "timestamp": latest['mtime'],
-            "protected_files": [] # We will store the actual file names here
+            "protected_files": []
         }
 
         try:
@@ -47,18 +57,19 @@ class MoverLogParser:
                 for line in f:
                     if "|" in line:
                         parts = [p.strip() for p in line.split("|")]
-                        # CA Mover Tuning: Column 3 is Status, Column 4 is Path (usually)
-                        # We try to find 'skipped' in any of the first few columns
-                        if any(p.lower() == "skipped" for p in parts):
-                            stats["excluded"] += 1
-                            # Attempt to find the path (usually the longest string or specific column)
-                            path = parts[4] if len(parts) > 4 else parts[-1]
-                            stats["protected_files"].append({
-                                "path": path,
-                                "size": parts[6] if len(parts) > 6 else "Unknown"
-                            })
-                        elif any(p.lower() == "yes" for p in parts):
-                            stats["moved"] += 1
+                        # Column 3 is status. If skipped, Column 4 is usually Path, Column 6 is size.
+                        if len(parts) >= 11:
+                            status = parts[3].lower()
+                            if status == "skipped":
+                                stats["excluded"] += 1
+                                # We want the actual Path (often index 4 or 10)
+                                path_val = parts[10] if len(parts[10]) > 5 else parts[4]
+                                stats["protected_files"].append({
+                                    "path": path_val,
+                                    "size": format_size(parts[6])
+                                })
+                            elif status == "yes":
+                                stats["moved"] += 1
             return stats
         except Exception as e:
             logger.error(f"Failed to parse list: {e}")
@@ -71,10 +82,6 @@ class MoverLogParser:
             percent = (usage.used / usage.total) * 100 if usage.total > 0 else 0
             return {"percent": round(percent, 1), "used": usage.used}
         except: return {"percent": 0, "used": 0}
-
-    def cleanup_logs(self):
-        # (Retention logic from before remains the same)
-        pass
 
 def get_mover_parser():
     return MoverLogParser()
