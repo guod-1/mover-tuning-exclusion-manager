@@ -21,17 +21,17 @@ class ExclusionSettings(BaseModel):
     custom_folders: List[str] = []
     exclude_tag_ids: List[int] = []
     plexcache_file_path: str = "/plexcache/unraid_mover_exclusions.txt"
-    last_build: Optional[str] = ""
+
 
 class RadarrSettings(BaseModel):
     url: str = ""
     api_key: str = ""
-    last_sync: Optional[str] = ""
+
 
 class SonarrSettings(BaseModel):
     url: str = ""
     api_key: str = ""
-    last_sync: Optional[str] = ""
+
 
 class UserSettings(BaseModel):
     radarr: RadarrSettings = RadarrSettings()

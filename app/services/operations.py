@@ -1,6 +1,4 @@
-import datetime
 import logging
-from app.core.config import get_user_settings, save_user_settings
 from app.services.radarr import get_radarr_client
 from app.services.sonarr import get_sonarr_client
 from app.services.exclusions import get_exclusion_manager
