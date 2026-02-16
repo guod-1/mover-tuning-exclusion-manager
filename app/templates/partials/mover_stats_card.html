@@ -3,15 +3,16 @@
         <h2 class="text-lg font-semibold text-white">
             <i class="fa-solid fa-chart-line mr-2 text-primary-500"></i> Mover Efficiency
         </h2>
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-3">
             {% if check_time %}
             <span class="text-[10px] text-gray-500 font-mono">Refreshed: {{ check_time }}</span>
             {% endif %}
             <button hx-get="/dashboard/stats/refresh" 
                     hx-target="#mover-stats-card" 
                     hx-swap="outerHTML"
+                    hx-indicator="#refresh-spinner"
                     class="text-gray-400 hover:text-white transition-colors">
-                <i class="fa-solid fa-rotate htmx-indicator-spin"></i>
+                <i id="refresh-spinner" class="fa-solid fa-rotate htmx-indicator"></i>
             </button>
         </div>
     </div>
@@ -19,17 +20,22 @@
         {% if stats %}
             <div class="grid grid-cols-2 gap-4">
                 <div class="text-center p-4 bg-gray-900 rounded-lg">
-                    <p class="text-sm text-gray-400">Files Protected</p>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Protected</p>
                     <p class="text-2xl font-bold text-primary-400">{{ stats.excluded }}</p>
                 </div>
                 <div class="text-center p-4 bg-gray-900 rounded-lg">
-                    <p class="text-sm text-gray-400">Files Moved</p>
+                    <p class="text-xs text-gray-400 uppercase tracking-wider mb-1">Moved</p>
                     <p class="text-2xl font-bold text-orange-400">{{ stats.moved }}</p>
                 </div>
             </div>
-            <p class="mt-4 text-[10px] text-gray-500 truncate italic">Source: {{ stats.filename }}</p>
+            <div class="mt-4 flex items-center justify-between text-[10px] text-gray-500">
+                <span class="truncate italic">File: {{ stats.filename }}</span>
+            </div>
         {% else %}
-            <p class="text-center text-gray-500 italic">No mover logs found in /mover_logs</p>
+            <div class="py-8 text-center">
+                <i class="fa-solid fa-file-circle-exclamation text-gray-600 text-3xl mb-2"></i>
+                <p class="text-sm text-gray-500 italic">No logs found in /mover_logs</p>
+            </div>
         {% endif %}
     </div>
 </div>
