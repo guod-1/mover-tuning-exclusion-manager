@@ -1,7 +1,7 @@
 <div id="mover-stats-card" class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
     <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center bg-gray-850">
         <h2 class="text-lg font-semibold text-white">
-            <i class="fa-solid fa-chart-line mr-2 text-primary-500"></i> Mover Efficiency
+            <i class="fa-solid fa-chart-line mr-2 {{ "text-green-400" if stats.is_run else "text-gray-500" }}"></i> Mover Efficiency
         </h2>
         <div class="flex items-center space-x-3">
             {% if check_time %}
@@ -30,7 +30,7 @@
             </div>
             <div class="mt-4 flex items-center justify-between text-[10px] text-gray-500">
                 <span class="truncate italic"><i class="fa-solid fa-file-invoice mr-1"></i> {{ stats.filename }}</span>
-                <span class="text-primary-500 font-bold uppercase">{{ "True Run" if stats.is_run else "Idle Check" }}</span>
+                <span class="{{ "text-green-400" if stats.is_run else "text-gray-500" }} font-bold uppercase">{{ stats.type_label }}</span>
             </div>
         {% else %}
             <div class="py-6 text-center">

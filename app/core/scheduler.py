@@ -29,6 +29,7 @@ class SchedulerService:
         try:
             # Call the synchronous function
             run_full_sync()
+            get_mover_parser().cleanup_logs()
             logger.info("Scheduler: Scheduled sync complete.")
         except Exception as e:
             logger.error(f"Scheduler failed: {e}")
