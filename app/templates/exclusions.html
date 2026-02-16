@@ -1,87 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 py-8">
-    <div class="flex justify-between items-center mb-6"><div>
-    <h1 class="text-3xl font-bold text-white mb-8">Exclusion Management</h1>
-
-    <div class="space-y-6">
-        <div class="bg-gray-800 shadow rounded-lg p-6 border border-gray-700">
-            <h2 class="text-xl font-semibold text-white mb-4">Radarr Tag Exclusions</h2>
-            <form action="/exclusions/radarr-tags/add" method="post" class="flex items-end space-x-3 mb-4">
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-400 mb-2">Select Radarr Tag</label>
-                    <select name="tag_id" class="w-full bg-gray-900 border border-gray-700 rounded-md py-2 px-3 text-white">
-                        <option value="">-- Select a tag --</option>
-                        {% for tag in tags %}<option value="{{ tag.id }}">{{ tag.label }}</option>{% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white font-medium py-2 px-4 rounded">Add</button>
-            </form>
-            <div class="flex flex-wrap gap-2">
-                {% for tag_id in user_settings.exclusions.radarr_exclude_tag_ids %}
-                    {% for tag in tags %}{% if tag.id == tag_id %}
-                    <form action="/exclusions/radarr-tags/remove" method="post" class="inline">
-                        <input type="hidden" name="tag_id" value="{{ tag_id }}">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-900 text-blue-200 border border-blue-700">
-                            {{ tag.label }} <button type="submit" class="ml-2 hover:text-red-400">&times;</button>
-                        </span>
-                    </form>
-                    {% endif %}{% endfor %}
-                {% endfor %}
-            </div>
+<div class="max-w-6xl mx-auto space-y-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-white tracking-tight">Exclusion Management</h1>
+            <p class="text-gray-400 mt-1">Paths currently protected from the Unraid Mover</p>
         </div>
-
-        <div class="bg-gray-800 shadow rounded-lg p-6 border border-gray-700">
-            <h2 class="text-xl font-semibold text-white mb-4">Sonarr Tag Exclusions</h2>
-            <form action="/exclusions/sonarr-tags/add" method="post" class="flex items-end space-x-3 mb-4">
-                <div class="flex-1">
-                    <label class="block text-sm font-medium text-gray-400 mb-2">Select Sonarr Tag</label>
-                    <select name="tag_id" class="w-full bg-gray-900 border border-gray-700 rounded-md py-2 px-3 text-white">
-                        <option value="">-- Select a tag --</option>
-                        {% for tag in sonarr_tags %}<option value="{{ tag.id }}">{{ tag.label }}</option>{% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white font-medium py-2 px-4 rounded">Add</button>
-            </form>
-            <div class="flex flex-wrap gap-2">
-                {% for tag_id in user_settings.exclusions.sonarr_exclude_tag_ids %}
-                    {% for tag in sonarr_tags %}{% if tag.id == tag_id %}
-                    <form action="/exclusions/sonarr-tags/remove" method="post" class="inline">
-                        <input type="hidden" name="tag_id" value="{{ tag_id }}">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-900 text-indigo-200 border border-indigo-700">
-                            {{ tag.label }} <button type="submit" class="ml-2 hover:text-red-400">&times;</button>
-                        </span>
-                    </form>
-                    {% endif %}{% endfor %}
-                {% endfor %}
-            </div>
-        </div>
-
-        <div class="bg-gray-800 shadow rounded-lg p-6 border border-gray-700">
-            <h2 class="text-xl font-semibold text-white mb-4">PlexCache-D Integration</h2>
-            <form action="/exclusions/plexcache" method="post" class="space-y-4">
-                <input type="text" name="plexcache_file_path" value="{{ user_settings.exclusions.plexcache_file_path }}" class="w-full bg-gray-900 border border-gray-700 rounded-md py-2 px-3 text-white font-mono text-sm">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">Save Path</button>
-            </form>
-        </div>
-
-        <div class="bg-gray-800 shadow rounded-lg p-6 border border-gray-700">
-            <h2 class="text-xl font-semibold text-white mb-4">Custom Folders</h2>
-            <form action="/exclusions/custom-folders" method="post" class="space-y-4">
-                <textarea name="custom_folders" rows="5" class="w-full bg-gray-900 border border-gray-700 rounded-md py-2 px-3 text-white font-mono text-sm">{{ '\n'.join(user_settings.exclusions.custom_folders) }}</textarea>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">Save Folders</button>
-            </form>
-        </div>
-
-        <div class="bg-gray-800 shadow rounded-lg overflow-hidden border border-gray-700">
-            <div class="px-6 py-4 bg-gray-850 border-b border-gray-700 flex justify-between">
-                <h2 class="text-xl font-semibold text-white">Current Exclusion File</h2>
-                <span class="text-sm text-gray-500">{{ stats.total_count }} items</span>
-            </div>
-            <div class="p-4 bg-gray-950 max-h-96 overflow-y-auto">
-                <pre class="text-green-400 font-mono text-xs">{% for ex in exclusions %}{{ ex }}{{ "\n" }}{% endfor %}</pre>
-            </div>
+        <div id="op-result-excl">
+            <button hx-post="/operations/run/exclusions" 
+                    hx-target="#op-result-excl" 
+                    class="bg-primary-600 hover:bg-primary-500 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center shadow-lg shadow-primary-900/20">
+                <i class="fa-solid fa-hammer mr-2"></i> Build Exclusions
+            </button>
         </div>
     </div>
-</div>
+
+    <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-2xl overflow-hidden">
+        <div class="px-6 py-4 bg-gray-850 border-b border-gray-700 flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-white">Current Exclusion File</h2>
+            <span class="text-[10px] text-gray-500 bg-gray-900 px-2 py-1 rounded font-bold uppercase tracking-wider">{{ current_exclusions|length }} Items Found</span>
+        </div>
+        <div class="max-h-[600px] overflow-y-auto">
+            <table class="min-w-full divide-y divide-gray-800 bg-gray-900">
+                <thead class="sticky top-0 bg-gray-950 shadow-md z-10">
+                    <tr class="text-left text-[11px] text-gray-500 uppercase font-bold">
+                        <th class="px-6 py-4">Excluded Path / Folder Pattern</th>
+                        <th class="px-6 py-4 text-right">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    {% for path in current_exclusions %}
+                    <tr class="hover:bg-gray-800/40 transition-colors group">
+                        <td class="px-6 py-3 text-xs text-gray-400 group-hover:text-gray-200 font-mono truncate max-w-4xl">
+                            {{ path }}
+                        </td>
+                        <td class="px-6 py-3 text-right">
+                            <span class="text-[10px] font-bold text-primary-500 bg-primary-950/30 px-2 py-1 rounded border border-primary-900/50">PROTECTED</span>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="2" class="px-6 py-10 text-center text-gray-500 italic">
+                            No exclusions found. Click "Build Exclusions" to generate the list.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    </div>
 {% endblock %}
