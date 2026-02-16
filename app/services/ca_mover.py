@@ -2,6 +2,7 @@ import os
 import glob
 import logging
 import datetime
+import shutil
 
 logger = logging.getLogger(__name__)
 
@@ -10,8 +11,23 @@ class MoverLogParser:
         self.log_dir = log_dir
 
     def get_latest_stats(self):
-        """Compatibility wrapper for dashboard"""
         return self.get_stats_for_file()
+
+    def get_cache_usage(self):
+        """Calculates disk usage for the cache drive mount point"""
+        try:
+            # Assumes /mnt/chloe is the cache mount point based on your setup
+            total, used, free = shutil.disk_usage("/mnt/chloe")
+            percent = (used / total) * 100
+            return {
+                "total": total,
+                "used": used,
+                "free": free,
+                "percent": round(percent, 1)
+            }
+        except Exception as e:
+            logger.error(f"Failed to get cache usage: {e}")
+            return {"total": 0, "used": 0, "free": 0, "percent": 0}
 
     def get_stats_for_file(self, filename=None):
         try:
@@ -20,13 +36,11 @@ class MoverLogParser:
                 list_of_files = glob.glob(f'{self.log_dir}/*.log')
             if not list_of_files: return None
             
-            # Sort by time to get the most recent log
             latest_file = max(list_of_files, key=os.path.getctime)
             
-            # Find the most recent log that ACTUALLY moved or skipped files (a 'Run')
             run_file = None
             for f in sorted(list_of_files, key=os.path.getctime, reverse=True):
-                if os.path.getsize(f) > 500: # Threshold: tiny logs are usually just 'checks'
+                if os.path.getsize(f) > 500:
                     run_file = f
                     break
             
@@ -38,8 +52,7 @@ class MoverLogParser:
                 "moved": 0,
                 "total_bytes_kept": 0,
                 "timestamp": os.path.getmtime(target_file),
-                "last_run_timestamp": os.path.getmtime(run_file) if run_file else None,
-                "efficiency": 0
+                "last_run_timestamp": os.path.getmtime(run_file) if run_file else None
             }
 
             with open(target_file, 'r') as f:
@@ -54,10 +67,6 @@ class MoverLogParser:
                                 stats["total_bytes_kept"] += size
                             elif status == "yes":
                                 stats["moved"] += 1
-            
-            total = stats["excluded"] + stats["moved"]
-            if total > 0:
-                stats["efficiency"] = round((stats["excluded"] / total) * 100, 1)
             return stats
         except Exception as e:
             logger.error(f"Failed to parse mover logs: {e}")
