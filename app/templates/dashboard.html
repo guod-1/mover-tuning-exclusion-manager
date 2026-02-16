@@ -16,32 +16,54 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
-            <h3 class="text-sm font-medium text-gray-400 uppercase mb-4">Active Exclusions</h3>
+        <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg p-6 relative group">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Active Exclusions</h3>
+                <button hx-post="/operations/run/exclusions" 
+                        hx-target="#exclusion-val" 
+                        hx-swap="innerHTML"
+                        class="text-gray-500 hover:text-primary-400 transition-colors">
+                    <i class="fa-solid fa-arrows-rotate text-xs"></i>
+                </button>
+            </div>
             <div class="flex items-baseline">
-                <span class="text-4xl font-bold text-white">{{ exclusion_count|default(0) }}</span>
+                <span id="exclusion-val" class="text-4xl font-bold text-white">{{ exclusion_count|default(0) }}</span>
                 <span class="ml-2 text-sm text-gray-500">on Cache</span>
             </div>
+            <p class="text-[10px] text-gray-600 mt-2 italic">Verified via /mnt/chloe</p>
         </div>
 
-        <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
-            <h3 class="text-sm font-medium text-gray-400 uppercase mb-4">Cache Usage</h3>
+        <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Cache Usage</h3>
+                <i class="fa-solid fa-hard-drive text-orange-500"></i>
+            </div>
             <div class="w-full bg-gray-900 rounded-full h-2.5 mb-2">
                 <div class="bg-orange-500 h-2.5 rounded-full" style="width: {{ cache_usage.percent|default(0) }}%"></div>
             </div>
-            <p class="text-white font-medium">{{ cache_usage.percent|default(0) }}% Full</p>
+            <div class="flex justify-between text-sm">
+                <span class="text-white font-medium">{{ cache_usage.percent|default(0) }}% Full</span>
+                <span class="text-gray-500">{{ (cache_usage.used / 1024 / 1024 / 1024) | round(1) }} GB</span>
+            </div>
         </div>
 
-        <div class="bg-gray-800 rounded-xl border border-gray-700 p-6">
-            <h3 class="text-sm font-medium text-gray-400 uppercase mb-4">Mover Status</h3>
-            <p class="text-2xl font-bold text-green-400">IDLE</p>
+        <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg p-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-medium text-gray-400 uppercase tracking-wider">Mover Status</h3>
+                <span class="flex h-3 w-3 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                </span>
+            </div>
+            <p class="text-2xl font-bold text-white">IDLE</p>
+            <p class="text-xs text-gray-500 mt-1">Monitoring logs...</p>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {% include "partials/mover_stats_card.html" %}
 
-        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden shadow-lg">
             <div class="px-6 py-4 border-b border-gray-700 bg-gray-850">
                 <h2 class="text-lg font-semibold text-white">Service Connections</h2>
             </div>
