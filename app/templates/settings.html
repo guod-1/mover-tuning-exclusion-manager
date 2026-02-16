@@ -8,6 +8,8 @@
             <h2 class="text-lg font-semibold text-white"><i class="fa-solid fa-film mr-2 text-primary-500"></i> Radarr Connection</h2>
             {% if request.query_params.get('radarr_status') == 'success' %}
                 <span class="text-green-400 text-xs font-bold uppercase tracking-wider bg-green-900/30 px-2 py-1 rounded">Connected</span>
+            {% elif request.query_params.get('radarr_status') == 'error' %}
+                <span class="text-red-400 text-xs font-bold uppercase tracking-wider bg-red-900/30 px-2 py-1 rounded">Connection Failed</span>
             {% endif %}
         </div>
         <div class="p-6">
@@ -15,14 +17,40 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">Radarr URL</label>
-                        <input type="text" name="url" value="{{ settings.radarr.url }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none">
+                        <input type="text" name="url" value="{{ settings.radarr.url }}" placeholder="http://192.168.1.X:7878" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-2">API Key</label>
                         <input type="password" name="api_key" value="{{ settings.radarr.api_key }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none">
                     </div>
                 </div>
-                <div class="flex justify-end"><button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white font-medium py-2 px-6 rounded-lg transition">Save & Test</button></div>
+                <div class="flex justify-end"><button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white font-medium py-2 px-6 rounded-lg transition">Save & Test Radarr</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg mb-8 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center bg-gray-850">
+            <h2 class="text-lg font-semibold text-white"><i class="fa-solid fa-tv mr-2 text-primary-500"></i> Sonarr Connection</h2>
+            {% if request.query_params.get('sonarr_status') == 'success' %}
+                <span class="text-green-400 text-xs font-bold uppercase tracking-wider bg-green-900/30 px-2 py-1 rounded">Connected</span>
+            {% elif request.query_params.get('sonarr_status') == 'error' %}
+                <span class="text-red-400 text-xs font-bold uppercase tracking-wider bg-red-900/30 px-2 py-1 rounded">Connection Failed</span>
+            {% endif %}
+        </div>
+        <div class="p-6">
+            <form action="/settings/sonarr/save" method="POST" class="space-y-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">Sonarr URL</label>
+                        <input type="text" name="url" value="{{ settings.sonarr.url }}" placeholder="http://192.168.1.X:8989" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-2">API Key</label>
+                        <input type="password" name="api_key" value="{{ settings.sonarr.api_key }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white outline-none">
+                    </div>
+                </div>
+                <div class="flex justify-end"><button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white font-medium py-2 px-6 rounded-lg transition">Save & Test Sonarr</button></div>
             </form>
         </div>
     </div>
@@ -48,5 +76,28 @@
         </div>
     </div>
 
+    <div class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-700 bg-gray-850">
+            <h2 class="text-lg font-semibold text-white"><i class="fa-solid fa-clock mr-2 text-primary-500"></i> Scheduler</h2>
+        </div>
+        <div class="p-6">
+            <form action="/settings/automation/save" method="POST" class="space-y-5">
+                <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                        <input type="checkbox" name="scheduler_enabled" {% if settings.scheduler.enabled %}checked{% endif %} value="true" class="w-4 h-4 rounded border-gray-600 bg-gray-700 text-primary-600 focus:ring-primary-600">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label class="font-medium text-gray-300">Enable Background Sync</label>
+                        <p class="text-gray-500">Automatically rebuild exclusions based on the schedule below.</p>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Cron Expression</label>
+                    <input type="text" name="cron_expression" value="{{ settings.scheduler.cron_expression }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-sm">
+                </div>
+                <div class="flex justify-end"><button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white font-medium py-2 px-6 rounded-lg transition">Update Schedule</button></div>
+            </form>
+        </div>
     </div>
+</div>
 {% endblock %}
