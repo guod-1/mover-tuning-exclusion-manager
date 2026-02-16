@@ -1,3 +1,4 @@
+from app.core.scheduler import scheduler
 from fastapi import APIRouter, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -32,6 +33,7 @@ async def save_paths(
     settings.exclusions.full_sync_cron = full_sync_cron
     settings.exclusions.log_monitor_interval = log_monitor_interval
     save_user_settings(settings)
+    scheduler.reload_jobs()
     logger.info(f"System paths updated. Cache: {cache_mount_path}")
     return RedirectResponse(url="/settings?status=success", status_code=303)
 
@@ -41,6 +43,7 @@ async def save_radarr(url: str = Form(...), api_key: str = Form(...)):
     settings.radarr.url = url
     settings.radarr.api_key = api_key
     save_user_settings(settings)
+    scheduler.reload_jobs()
     return RedirectResponse(url="/settings?radarr_status=success", status_code=303)
 
 @router.post("/sonarr/save")
@@ -49,4 +52,5 @@ async def save_sonarr(url: str = Form(...), api_key: str = Form(...)):
     settings.sonarr.url = url
     settings.sonarr.api_key = api_key
     save_user_settings(settings)
+    scheduler.reload_jobs()
     return RedirectResponse(url="/settings?sonarr_status=success", status_code=303)

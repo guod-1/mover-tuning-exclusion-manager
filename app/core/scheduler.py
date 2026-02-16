@@ -1,49 +1,64 @@
-import logging
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
 from app.core.config import get_user_settings
-from app.services.operations import run_full_sync
+from app.services.exclusions import run_full_operation
+from app.services.ca_mover import check_ca_mover_logs
+import logging
 
 logger = logging.getLogger(__name__)
 
-class SchedulerService:
+class CacheScheduler:
     def __init__(self):
-        # Changed to AsyncIOScheduler (standard name)
-        self.scheduler = AsyncIOScheduler()
+        self.scheduler = BackgroundScheduler()
+        self.full_sync_job_id = "full_sync_job"
+        self.log_monitor_job_id = "log_monitor_job"
 
     def start(self):
         settings = get_user_settings()
-        if settings.scheduler.enabled:
-            # We add a standard job that calls our non-async sync function
-            self.scheduler.add_job(
-                self._run_sync_job, 
-                'cron', 
-                id='mover_sync',
-                replace_existing=True,
-                **self._parse_cron(settings.scheduler.cron_expression)
-            )
-            self.scheduler.start()
-            logger.info(f"Scheduler started with cron: {settings.scheduler.cron_expression}")
+        
+        # 1. Schedule Full Sync (Cron)
+        cron_val = settings.exclusions.full_sync_cron or "0 * * * *"
+        self.scheduler.add_job(
+            run_full_operation,
+            CronTrigger.from_crontab(cron_val),
+            id=self.full_sync_job_id,
+            replace_existing=True
+        )
+        
+        # 2. Schedule Log Monitor (Interval)
+        interval_val = int(settings.exclusions.log_monitor_interval or 300)
+        self.scheduler.add_job(
+            check_ca_mover_logs,
+            IntervalTrigger(seconds=interval_val),
+            id=self.log_monitor_job_id,
+            replace_existing=True
+        )
+        
+        self.scheduler.start()
+        logger.info(f"Scheduler started: Full Sync ({cron_val}), Log Monitor ({interval_val}s)")
 
-    def _run_sync_job(self):
-        logger.info("Scheduler: Starting scheduled sync...")
-        try:
-            # Call the synchronous function
-            run_full_sync()
-            get_mover_parser().cleanup_logs()
-            logger.info("Scheduler: Scheduled sync complete.")
-        except Exception as e:
-            logger.error(f"Scheduler failed: {e}")
+    def reload_jobs(self):
+        """Called after settings update to refresh schedules without restarting app"""
+        settings = get_user_settings()
+        
+        # Update Full Sync
+        cron_val = settings.exclusions.full_sync_cron or "0 * * * *"
+        self.scheduler.reschedule_job(
+            self.full_sync_job_id, 
+            trigger=CronTrigger.from_crontab(cron_val)
+        )
+        
+        # Update Log Monitor
+        interval_val = int(settings.exclusions.log_monitor_interval or 300)
+        self.scheduler.reschedule_job(
+            self.log_monitor_job_id, 
+            trigger=IntervalTrigger(seconds=interval_val)
+        )
+        logger.info("Scheduler jobs reloaded with new settings.")
 
-    def _parse_cron(self, cron_str):
-        parts = cron_str.split()
-        if len(parts) < 5:
-             return {'minute': '0', 'hour': '*/6'}
-        return {
-            'minute': parts[0],
-            'hour': parts[1],
-            'day': parts[2],
-            'month': parts[3],
-            'day_of_week': parts[4]
-        }
+    def shutdown(self):
+        self.scheduler.shutdown()
 
-scheduler_service = SchedulerService()
+# Global instance
+scheduler = CacheScheduler()
