@@ -6,7 +6,6 @@ from app.services.radarr import get_radarr_client
 from app.services.sonarr import get_sonarr_client
 from app.services.exclusions import get_exclusion_manager
 import logging
-from typing import List
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -58,24 +57,48 @@ async def exclusions_page(request: Request):
     return templates.TemplateResponse("exclusions.html", context)
 
 
-@router.post("/radarr-tags")
-async def save_radarr_tags(radarr_exclude_tag_ids: List[int] = Form([])):
-    """Save Radarr tag exclusions"""
+@router.post("/radarr-tags/add")
+async def add_radarr_tag(tag_id: int = Form(...)):
+    """Add a Radarr tag to exclusions"""
     user_settings = get_user_settings()
-    user_settings.exclusions.radarr_exclude_tag_ids = radarr_exclude_tag_ids
-    save_user_settings(user_settings)
-    logger.info(f"Radarr tags updated: {radarr_exclude_tag_ids}")
-    return RedirectResponse(url="/exclusions/?success=true", status_code=303)
+    if tag_id not in user_settings.exclusions.radarr_exclude_tag_ids:
+        user_settings.exclusions.radarr_exclude_tag_ids.append(tag_id)
+        save_user_settings(user_settings)
+        logger.info(f"Added Radarr tag {tag_id} to exclusions")
+    return RedirectResponse(url="/exclusions/", status_code=303)
 
 
-@router.post("/sonarr-tags")
-async def save_sonarr_tags(sonarr_exclude_tag_ids: List[int] = Form([])):
-    """Save Sonarr tag exclusions"""
+@router.post("/radarr-tags/remove")
+async def remove_radarr_tag(tag_id: int = Form(...)):
+    """Remove a Radarr tag from exclusions"""
     user_settings = get_user_settings()
-    user_settings.exclusions.sonarr_exclude_tag_ids = sonarr_exclude_tag_ids
-    save_user_settings(user_settings)
-    logger.info(f"Sonarr tags updated: {sonarr_exclude_tag_ids}")
-    return RedirectResponse(url="/exclusions/?success=true", status_code=303)
+    if tag_id in user_settings.exclusions.radarr_exclude_tag_ids:
+        user_settings.exclusions.radarr_exclude_tag_ids.remove(tag_id)
+        save_user_settings(user_settings)
+        logger.info(f"Removed Radarr tag {tag_id} from exclusions")
+    return RedirectResponse(url="/exclusions/", status_code=303)
+
+
+@router.post("/sonarr-tags/add")
+async def add_sonarr_tag(tag_id: int = Form(...)):
+    """Add a Sonarr tag to exclusions"""
+    user_settings = get_user_settings()
+    if tag_id not in user_settings.exclusions.sonarr_exclude_tag_ids:
+        user_settings.exclusions.sonarr_exclude_tag_ids.append(tag_id)
+        save_user_settings(user_settings)
+        logger.info(f"Added Sonarr tag {tag_id} to exclusions")
+    return RedirectResponse(url="/exclusions/", status_code=303)
+
+
+@router.post("/sonarr-tags/remove")
+async def remove_sonarr_tag(tag_id: int = Form(...)):
+    """Remove a Sonarr tag from exclusions"""
+    user_settings = get_user_settings()
+    if tag_id in user_settings.exclusions.sonarr_exclude_tag_ids:
+        user_settings.exclusions.sonarr_exclude_tag_ids.remove(tag_id)
+        save_user_settings(user_settings)
+        logger.info(f"Removed Sonarr tag {tag_id} from exclusions")
+    return RedirectResponse(url="/exclusions/", status_code=303)
 
 
 @router.post("/plexcache")

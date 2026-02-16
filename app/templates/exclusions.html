@@ -19,32 +19,51 @@
                 Movies with these tags will be excluded from the Unraid mover
             </p>
             
-            <form action="/exclusions/radarr-tags" method="post" class="space-y-4">
-                <div>
+            <!-- Add tag form -->
+            <form action="/exclusions/radarr-tags/add" method="post" class="flex items-end space-x-3 mb-4">
+                <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Select Radarr Tags to Exclude
+                        Select Tag to Add
                     </label>
-                    <select name="radarr_exclude_tag_ids" 
-                            multiple
-                            size="8"
+                    <select name="tag_id" 
                             class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-gray-100">
+                        <option value="">-- Select a tag --</option>
                         {% for tag in tags %}
-                        <option value="{{ tag.id }}" 
-                                {% if tag.id in user_settings.exclusions.radarr_exclude_tag_ids %}selected{% endif %}>
-                            {{ tag.label }} (ID: {{ tag.id }})
-                        </option>
+                        <option value="{{ tag.id }}">{{ tag.label }} (ID: {{ tag.id }})</option>
                         {% endfor %}
                     </select>
-                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                        Hold Ctrl/Cmd to select multiple tags
-                    </p>
                 </div>
-                
                 <button type="submit" 
                         class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
-                    Save Radarr Tags
+                    Add Tag
                 </button>
             </form>
+            
+            <!-- Currently selected tags as badges -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Currently Excluded Tags
+                </label>
+                <div class="flex flex-wrap gap-2">
+                    {% if user_settings.exclusions.radarr_exclude_tag_ids %}
+                        {% for tag_id in user_settings.exclusions.radarr_exclude_tag_ids %}
+                            {% for tag in tags %}
+                                {% if tag.id == tag_id %}
+                                <form action="/exclusions/radarr-tags/remove" method="post" class="inline">
+                                    <input type="hidden" name="tag_id" value="{{ tag_id }}">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                                        {{ tag.label }}
+                                        <button type="submit" class="ml-2 hover:text-red-600">&times;</button>
+                                    </span>
+                                </form>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-sm text-gray-500 dark:text-gray-400 italic">No tags selected</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
         <!-- Sonarr Tag Exclusions -->
@@ -54,32 +73,51 @@
                 TV shows with these tags will be excluded from the Unraid mover
             </p>
             
-            <form action="/exclusions/sonarr-tags" method="post" class="space-y-4">
-                <div>
+            <!-- Add tag form -->
+            <form action="/exclusions/sonarr-tags/add" method="post" class="flex items-end space-x-3 mb-4">
+                <div class="flex-1">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Select Sonarr Tags to Exclude
+                        Select Tag to Add
                     </label>
-                    <select name="sonarr_exclude_tag_ids" 
-                            multiple
-                            size="8"
+                    <select name="tag_id" 
                             class="block w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 text-gray-900 dark:text-gray-100">
+                        <option value="">-- Select a tag --</option>
                         {% for tag in sonarr_tags %}
-                        <option value="{{ tag.id }}" 
-                                {% if tag.id in user_settings.exclusions.sonarr_exclude_tag_ids %}selected{% endif %}>
-                            {{ tag.label }} (ID: {{ tag.id }})
-                        </option>
+                        <option value="{{ tag.id }}">{{ tag.label }} (ID: {{ tag.id }})</option>
                         {% endfor %}
                     </select>
-                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                        Hold Ctrl/Cmd to select multiple tags
-                    </p>
                 </div>
-                
                 <button type="submit" 
                         class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded">
-                    Save Sonarr Tags
+                    Add Tag
                 </button>
             </form>
+            
+            <!-- Currently selected tags as badges -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Currently Excluded Tags
+                </label>
+                <div class="flex flex-wrap gap-2">
+                    {% if user_settings.exclusions.sonarr_exclude_tag_ids %}
+                        {% for tag_id in user_settings.exclusions.sonarr_exclude_tag_ids %}
+                            {% for tag in sonarr_tags %}
+                                {% if tag.id == tag_id %}
+                                <form action="/exclusions/sonarr-tags/remove" method="post" class="inline">
+                                    <input type="hidden" name="tag_id" value="{{ tag_id }}">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                                        {{ tag.label }}
+                                        <button type="submit" class="ml-2 hover:text-red-600">&times;</button>
+                                    </span>
+                                </form>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-sm text-gray-500 dark:text-gray-400 italic">No tags selected</p>
+                    {% endif %}
+                </div>
+            </div>
         </div>
 
         <!-- PlexCache-D File -->
