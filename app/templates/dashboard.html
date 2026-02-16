@@ -18,48 +18,60 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
     
-    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg relative overflow-hidden group">
+    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg relative overflow-hidden group h-32">
         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
             <i class="fa-solid fa-film text-6xl"></i>
         </div>
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-col h-full justify-between">
             <h3 class="text-gray-400 font-medium">Radarr</h3>
-            <span class="px-2 py-1 rounded text-xs font-bold {% if radarr_connected %}bg-green-900 text-green-300 border border-green-700{% else %}bg-red-900 text-red-300 border border-red-700{% endif %}">
-                {% if radarr_connected %}ONLINE{% else %}OFFLINE{% endif %}
-            </span>
+            
+            <div class="absolute bottom-4 right-4">
+                <span class="px-2 py-1 rounded text-xs font-bold shadow-sm {% if radarr_connected %}bg-green-900 text-green-300 border border-green-700{% else %}bg-red-900 text-red-300 border border-red-700{% endif %}">
+                    {% if radarr_connected %}ONLINE{% else %}OFFLINE{% endif %}
+                </span>
+            </div>
+            
+            <div class="text-sm text-gray-500 mt-1">Movie Indexer</div>
         </div>
-        <div class="text-sm text-gray-500">Movie Indexer Status</div>
     </div>
 
-    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg relative overflow-hidden group">
+    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg relative overflow-hidden group h-32">
         <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition">
             <i class="fa-solid fa-tv text-6xl"></i>
         </div>
-        <div class="flex items-center justify-between mb-4">
+        <div class="flex flex-col h-full justify-between">
             <h3 class="text-gray-400 font-medium">Sonarr</h3>
-            <span class="px-2 py-1 rounded text-xs font-bold {% if sonarr_connected %}bg-green-900 text-green-300 border border-green-700{% else %}bg-red-900 text-red-300 border border-red-700{% endif %}">
-                {% if sonarr_connected %}ONLINE{% else %}OFFLINE{% endif %}
-            </span>
+            
+            <div class="absolute bottom-4 right-4">
+                <span class="px-2 py-1 rounded text-xs font-bold shadow-sm {% if sonarr_connected %}bg-green-900 text-green-300 border border-green-700{% else %}bg-red-900 text-red-300 border border-red-700{% endif %}">
+                    {% if sonarr_connected %}ONLINE{% else %}OFFLINE{% endif %}
+                </span>
+            </div>
+            
+            <div class="text-sm text-gray-500 mt-1">Series Indexer</div>
         </div>
-        <div class="text-sm text-gray-500">Series Indexer Status</div>
     </div>
 
-    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg">
-        <div class="flex items-center justify-between mb-2">
+    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg h-32 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
             <h3 class="text-gray-400 font-medium">Total Exclusions</h3>
             <i class="fa-solid fa-shield-halved text-primary-500"></i>
         </div>
-        <div id="dashboard-exclusion-count" class="text-3xl font-bold text-white mb-1">{{ exclusion_count }}</div>
-        <div class="text-xs text-gray-500">Last built: {{ last_build }}</div>
+        <div>
+            <div id="dashboard-exclusion-count" class="text-3xl font-bold text-white">{{ exclusion_count }}</div>
+            <div class="text-xs text-gray-500 mt-1">Last built: {{ last_build }}</div>
+        </div>
     </div>
 
-    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg">
-        <div class="flex items-center justify-between mb-2">
+    <div class="bg-gray-800 rounded-xl p-5 border border-gray-700 shadow-lg h-32 flex flex-col justify-between">
+        <div class="flex items-center justify-between">
             <h3 class="text-gray-400 font-medium">Mover Tuning</h3>
             <i class="fa-solid fa-hard-drive text-orange-500"></i>
         </div>
-        <div class="text-lg font-bold text-white mb-1 truncate" title="{{ ca_mover_status }}">{{ ca_mover_status }}</div>
-        <div class="text-xs text-gray-500">Last check: {{ last_run_mover }}</div>
+        <div>
+            <div class="text-lg font-bold text-white truncate" title="{{ ca_mover_status }}">{{ ca_mover_status }}</div>
+            <div class="text-xs text-gray-500 mt-1">Last check: {{ last_run_mover }}</div>
+        </div>
     </div>
 </div>
 
