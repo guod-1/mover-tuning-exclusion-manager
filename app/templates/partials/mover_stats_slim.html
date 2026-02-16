@@ -1,0 +1,33 @@
+<div id="mover-stats-card" class="bg-gray-800 rounded-xl border border-gray-700 shadow-lg overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-700 flex justify-between items-center bg-gray-850">
+        <h2 class="text-lg font-semibold text-white">
+            <i class="fa-solid fa-chart-line mr-2 text-primary-500"></i> Mover Efficiency
+        </h2>
+        <button hx-get="/dashboard/stats/refresh" hx-target="#mover-stats-card" hx-swap="outerHTML"
+                class="bg-gray-700 hover:bg-gray-600 text-white text-xs py-1 px-3 rounded border border-gray-600">
+            Check Latest Log
+        </button>
+    </div>
+    <div class="p-6">
+        {% if stats %}
+            <div class="grid grid-cols-2 gap-4">
+                <div class="text-center p-4 bg-gray-900 rounded-lg border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Protected</p>
+                    <p class="text-2xl font-bold text-primary-400">{{ stats.excluded }}</p>
+                </div>
+                <div class="text-center p-4 bg-gray-900 rounded-lg border border-gray-800">
+                    <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Moved</p>
+                    <p class="text-2xl font-bold text-orange-400">{{ stats.moved }}</p>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-between items-center text-[10px] text-gray-500 border-t border-gray-700 pt-3">
+                <span class="italic truncate max-w-[200px]">{{ stats.filename }}</span>
+                <span class="{{ 'text-green-400' if stats.is_run else 'text-gray-500' }} font-bold uppercase">{{ stats.type_label }}</span>
+            </div>
+        {% else %}
+            <div class="py-4 text-center">
+                <p class="text-sm text-gray-500 italic">No activity logs found.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
