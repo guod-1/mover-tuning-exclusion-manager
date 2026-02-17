@@ -17,14 +17,12 @@ class ExclusionManager:
         clean = path.strip().strip('"').strip("'")
         settings = get_user_settings()
         
-        # Check for movies keyword and replace with user-configured Movie Base Path
         if "/movies/" in clean.lower():
             idx = clean.lower().find("/movies/")
             base = settings.exclusions.movie_base_path.rstrip('/')
             sub_path = clean[idx+8:].lstrip('/')
             return f"{base}/{sub_path}"
             
-        # Check for tv keyword and replace with user-configured TV Base Path
         if "/tv/" in clean.lower():
             idx = clean.lower().find("/tv/")
             base = settings.exclusions.tv_base_path.rstrip('/')
@@ -38,13 +36,13 @@ class ExclusionManager:
         all_paths = set()
         settings = get_user_settings()
 
-        # 1. Gather Custom folders
+        # 1. Custom folders
         for folder in settings.exclusions.custom_folders:
             normalized = self._normalize_path(folder)
             if normalized:
                 all_paths.add(normalized)
 
-        # 2. Gather PlexCache-D paths
+        # 2. PlexCache-D paths
         pc_path = Path(settings.exclusions.plexcache_file_path)
         if pc_path.exists():
             try:
@@ -55,7 +53,7 @@ class ExclusionManager:
             except Exception as e:
                 logger.error(f"Error reading PlexCache file: {e}")
 
-        # 3. Gather Radarr paths
+        # 3. Radarr paths
         if settings.exclusions.radarr_exclude_tag_ids:
             try:
                 movies = get_radarr_client().get_all_movies()
@@ -68,7 +66,7 @@ class ExclusionManager:
             except Exception as e:
                 logger.error(f"Radarr exclusion build failed: {e}")
 
-        # 4. Gather Sonarr paths
+        # 4. Sonarr paths
         if settings.exclusions.sonarr_exclude_tag_ids:
             try:
                 shows = get_sonarr_client().get_all_series()
@@ -80,31 +78,18 @@ class ExclusionManager:
             except Exception as e:
                 logger.error(f"Sonarr exclusion build failed: {e}")
 
-        # 5. VALIDATION: Only keep files that exist on the specific cache path
-        valid_paths = []
-        for p in all_paths:
-            # We assume the container has the cache path mounted correctly
-            # (e.g., /mnt/chloe inside container matches /mnt/chloe on host)
-            if os.path.exists(p):
-                valid_paths.append(p)
-            else:
-                # This file is either missing, not downloaded, or already moved to array
-                logger.warning(f"Path does not exist in container: {p}")
-                pass
-
-        final_list = sorted(valid_paths)
+        final_list = sorted(all_paths)
         
         try:
             with open(self.output_file, 'w') as f:
                 for path in final_list:
                     f.write(f"{path}\n")
             
-            # Update last build time
             settings.exclusions.last_build = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             save_user_settings(settings)
             
-            logger.info(f"Exclusions built. Candidates: {len(all_paths)}, Validated (Existing): {len(final_list)}")
-            return {"total": len(final_list), "candidates": len(all_paths)}
+            logger.info(f"Exclusions built. Total paths: {len(final_list)}")
+            return {"total": len(final_list)}
             
         except Exception as e:
             logger.error(f"Failed to write exclusion file: {e}")
