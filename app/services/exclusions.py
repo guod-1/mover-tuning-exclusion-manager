@@ -15,13 +15,13 @@ class ExclusionManager:
     def _exists_on_cache(self, host_path: str) -> bool:
         """Translate host path to container mount path and check existence"""
         settings = get_user_settings()
-        host_prefix = settings.exclusions.host_cache_path  # e.g. /mnt/chloe
-        container_prefix = settings.exclusions.cache_mount_path  # e.g. /mnt/cache
+        host_prefix = settings.exclusions.host_cache_path
+        container_prefix = settings.exclusions.cache_mount_path
+        logger.info(f"PATH CHECK | host_prefix={host_prefix!r} container_prefix={container_prefix!r}")
+        logger.info(f"PATH CHECK | original={host_path!r}")
         container_path = host_path.replace(host_prefix, container_prefix)
-        result = os.path.exists(container_path)
-        if not result:
-            logger.debug(f"Not on cache: {container_path}")
-        return result
+        logger.info(f"PATH CHECK | translated={container_path!r} exists={os.path.exists(container_path)}")
+        return os.path.exists(container_path)
 
     def build_exclusions(self):
         logger.info("Building exclusions list...")
