@@ -46,9 +46,9 @@
                         <p class="text-[10px] text-gray-500 mt-1 italic">Example: "0 * * * *" is every hour. "30 3 * * *" is 3:30 AM daily.</p>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Log Monitor Interval (Seconds)</label>
+                        <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Log Monitor Schedule (Cron)</label>
                         <input type="number" name="log_monitor_interval" value="{{ settings.exclusions.log_monitor_interval|default(300) }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-xs">
-                        <p class="text-[10px] text-gray-500 mt-1 italic">How often to refresh the Dashboard stats (default: 300s / 5m).</p>
+                        <p class="text-[10px] text-gray-500 mt-1 italic">Example: "*/5 * * * *" is every 5 minutes.</p>
                     </div>
                 </div>
 

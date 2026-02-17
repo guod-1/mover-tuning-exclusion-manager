@@ -15,26 +15,16 @@ class ExclusionSettings(BaseModel):
     sonarr_exclude_tag_ids: List[int] = []
     plexcache_file_path: str = "/plexcache/unraid_mover_exclusions.txt"
     ca_mover_log_path: str = "/mover_logs/ca.mover.tuning.log"
-    # Configurable Paths
     cache_mount_path: str = "/mnt/cache"
     movie_base_path: str = "/mnt/cache/data/media/movies/"
     tv_base_path: str = "/mnt/cache/data/media/tv/"
     last_build: Optional[str] = None
-    # New Scheduling Fields
     full_sync_cron: str = "0 * * * *"
-    log_monitor_interval: int = 300
-
-class RadarrSettings(BaseModel):
-    url: str = ""
-    api_key: str = ""
-
-class SonarrSettings(BaseModel):
-    url: str = ""
-    api_key: str = ""
+    log_monitor_cron: str = "*/5 * * * *"
 
 class UserSettings(BaseModel):
-    radarr: RadarrSettings = RadarrSettings()
-    sonarr: SonarrSettings = SonarrSettings()
+    radarr: dict = {"url": "", "api_key": ""}
+    sonarr: dict = {"url": "", "api_key": ""}
     exclusions: ExclusionSettings = ExclusionSettings()
     scheduler: SchedulerSettings = SchedulerSettings()
 
@@ -42,10 +32,8 @@ def get_user_settings() -> UserSettings:
     if os.path.exists(CONFIG_PATH):
         try:
             with open(CONFIG_PATH, "r") as f:
-                data = json.load(f)
-                return UserSettings.parse_obj(data)
-        except Exception:
-            return UserSettings()
+                return UserSettings.parse_obj(json.load(f))
+        except: return UserSettings()
     return UserSettings()
 
 def save_user_settings(settings: UserSettings):
