@@ -4,17 +4,18 @@ from fastapi.templating import Jinja2Templates
 from app.core.config import get_user_settings
 from app.services.ca_mover import get_mover_parser
 from app.services.exclusions import get_exclusion_manager
-import httpx
+import urllib.request
+import urllib.error
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
-async def check_service(url, api_key):
+def check_service(url, api_key):
     if not url or not api_key: return False
     try:
-        async with httpx.AsyncClient() as client:
-            response = await client.get(f"{url.rstrip('/')}/api/v3/system/status", params={"apiKey": api_key}, timeout=2)
-            return response.status_code == 200
+        target = f"{url.rstrip('/')}/api/v3/system/status?apiKey={api_key}"
+        with urllib.request.urlopen(target, timeout=2) as response:
+            return response.status == 200
     except:
         return False
 
@@ -24,8 +25,8 @@ async def dashboard_page(request: Request):
     stats = get_mover_parser().get_latest_stats()
     
     # Check Service Health
-    radarr_up = await check_service(settings.radarr.url, settings.radarr.api_key)
-    sonarr_up = await check_service(settings.sonarr.url, settings.sonarr.api_key)
+    radarr_up = check_service(settings.radarr.url, settings.radarr.api_key)
+    sonarr_up = check_service(settings.sonarr.url, settings.sonarr.api_key)
     
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
