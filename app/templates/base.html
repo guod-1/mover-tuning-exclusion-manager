@@ -2,46 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MTEM v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
-    <style>
-        .bg-gray-850 { background-color: #1a202c; }
-        .bg-primary-600 { background-color: #0d9488; }
-        .text-primary-400 { color: #2dd4bf; }
-        .text-primary-500 { color: #14b8a6; }
-    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans min-h-screen flex">
-    <div class="w-64 bg-gray-850 border-r border-gray-800 flex flex-col fixed h-full">
-        <div class="p-6 border-b border-gray-800">
-            <div class="flex items-center space-x-3">
-                <img src="/static/logo.png" class="h-8 w-8 rounded" onerror="this.src='https://raw.githubusercontent.com/guod-1/mover-tuning-exclusion-manager/main/logo.png'">
-                <span class="text-white font-bold text-xl uppercase tracking-tighter">MTEM <span class="text-primary-500">v2.0</span></span>
-            </div>
-        </div>
+<body class="bg-gray-900 text-gray-100 flex min-h-screen">
+    <div class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col fixed h-full">
+        <div class="p-6 border-b border-gray-700 font-bold text-xl text-teal-500 uppercase">MTEM v2.0</div>
         <nav class="flex-1 p-4 space-y-2">
-            <a href="/dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                <i class="fa-solid fa-gauge-high w-5"></i><span>Dashboard</span>
-            </a>
-            <a href="/movies" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                <i class="fa-solid fa-film w-5"></i><span>Movies</span>
-            </a>
-            <a href="/shows" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                <i class="fa-solid fa-tv w-5"></i><span>TV Shows</span>
-            </a>
-            <a href="/exclusions" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                <i class="fa-solid fa-folder-minus w-5"></i><span>Exclusions</span>
-            </a>
-            <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">System</div>
-            <a href="/logs" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                <i class="fa-solid fa-terminal w-5"></i><span>Logs</span>
-            </a>
-            <a href="/settings" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
-                <i class="fa-solid fa-gear w-5"></i><span>Settings</span>
-            </a>
+            <a href="/dashboard" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-gauge mr-2"></i>Dashboard</a>
+            <a href="/movies" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-film mr-2"></i>Movies</a>
+            <a href="/shows" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-tv mr-2"></i>TV Shows</a>
+            <a href="/exclusions" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-folder-minus mr-2"></i>Exclusions</a>
+            <a href="/logs" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-terminal mr-2"></i>Logs</a>
+            <a href="/settings" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-gear mr-2"></i>Settings</a>
         </nav>
     </div>
     <main class="flex-1 ml-64 p-8">
