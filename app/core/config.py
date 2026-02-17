@@ -20,6 +20,9 @@ class ExclusionSettings(BaseModel):
     movie_base_path: str = "/mnt/cache/data/media/movies/"
     tv_base_path: str = "/mnt/cache/data/media/tv/"
     last_build: Optional[str] = None
+    # New Scheduling Fields
+    full_sync_cron: str = "0 * * * *"
+    log_monitor_interval: int = 300
 
 class RadarrSettings(BaseModel):
     url: str = ""
@@ -39,8 +42,9 @@ def get_user_settings() -> UserSettings:
     if os.path.exists(CONFIG_PATH):
         try:
             with open(CONFIG_PATH, "r") as f:
-                return UserSettings.parse_obj(json.load(f))
-        except:
+                data = json.load(f)
+                return UserSettings.parse_obj(data)
+        except Exception:
             return UserSettings()
     return UserSettings()
 
