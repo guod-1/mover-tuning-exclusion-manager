@@ -7,11 +7,25 @@ import logging
 logger = logging.getLogger(__name__)
 
 def run_sync_task():
-    """Helper function to get the manager and run the build"""
-    from app.services.exclusions import get_exclusion_manager
-    manager = get_exclusion_manager()
-    manager.build_exclusions()
-    logger.info("Scheduled Full Sync: build_exclusions completed.")
+    """Initializes the manager and rebuilds the exclusion file"""
+    try:
+        from app.services.exclusions import get_exclusion_manager
+        manager = get_exclusion_manager()
+        manager.build_exclusions()
+        logger.info("Scheduled Task: build_exclusions completed successfully.")
+    except Exception as e:
+        logger.error(f"Scheduled Task Error (Sync): {str(e)}")
+
+def run_stats_task():
+    """Initializes the mover parser and refreshes the dashboard data"""
+    try:
+        from app.services.ca_mover import get_mover_parser
+        parser = get_mover_parser()
+        # Triggering get_latest_stats refreshes the internal cache of the parser
+        stats = parser.get_latest_stats()
+        logger.info(f"Scheduled Task: Log Monitor refreshed ({stats.get('excluded', 0)} protected).")
+    except Exception as e:
+        logger.error(f"Scheduled Task Error (Stats): {str(e)}")
 
 class CacheScheduler:
     def __init__(self):
@@ -22,10 +36,10 @@ class CacheScheduler:
     def start(self):
         settings = get_user_settings()
         
-        from app.services.ca_mover import check_ca_mover_logs
+        cron_val = settings.exclusions.full_sync_cron or "0 * * * *"
+        interval_val = int(settings.exclusions.log_monitor_interval or 300)
 
         # 1. Schedule Full Sync (Cron)
-        cron_val = settings.exclusions.full_sync_cron or "0 * * * *"
         self.scheduler.add_job(
             run_sync_task,
             CronTrigger.from_crontab(cron_val),
@@ -34,9 +48,8 @@ class CacheScheduler:
         )
         
         # 2. Schedule Log Monitor (Interval)
-        interval_val = int(settings.exclusions.log_monitor_interval or 300)
         self.scheduler.add_job(
-            check_ca_mover_logs,
+            run_stats_task,
             IntervalTrigger(seconds=interval_val),
             id=self.log_monitor_job_id,
             replace_existing=True
@@ -47,7 +60,6 @@ class CacheScheduler:
 
     def reload_jobs(self):
         settings = get_user_settings()
-        
         cron_val = settings.exclusions.full_sync_cron or "0 * * * *"
         interval_val = int(settings.exclusions.log_monitor_interval or 300)
 
@@ -59,7 +71,7 @@ class CacheScheduler:
             self.log_monitor_job_id, 
             trigger=IntervalTrigger(seconds=interval_val)
         )
-        logger.info("Scheduler jobs reloaded with new settings.")
+        logger.info(f"Scheduler reloaded: Sync ({cron_val}), Monitor ({interval_val}s)")
 
     def shutdown(self):
         self.scheduler.shutdown()
