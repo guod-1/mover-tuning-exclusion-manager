@@ -89,7 +89,7 @@ class ExclusionManager:
                 valid_paths.append(p)
             else:
                 # This file is either missing, not downloaded, or already moved to array
-                # logger.debug(f"Skipping non-existent cache path: {p}")
+                logger.warning(f"Path does not exist in container: {p}")
                 pass
 
         final_list = sorted(valid_paths)
