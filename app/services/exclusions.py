@@ -89,10 +89,13 @@ class ExclusionManager:
                 logger.error(f"Sonarr exclusion build failed: {e}")
 
         # 5. Validate paths exist on cache
+        # Radarr/Sonarr store host paths (/mnt/chloe) but container mounts as /mnt/cache
+        # So we check existence via /mnt/cache but write the original host path to the file
         valid_paths = []
         skipped = 0
         for p in all_paths:
-            if os.path.exists(p):
+            check_path = p.replace('/mnt/chloe', '/mnt/cache')
+            if os.path.exists(check_path):
                 valid_paths.append(p)
             else:
                 skipped += 1
