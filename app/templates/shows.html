@@ -1,29 +1,44 @@
 {% extends "base.html" %}
+
 {% block content %}
-<div class="max-w-6xl mx-auto">
-    <header class="mb-10">
-        <h1 class="text-4xl font-extrabold text-white tracking-tight">TV Shows</h1>
-        <p class="text-slate-400 mt-1">Monitored series with files on cache</p>
-    </header>
-    <div class="bg-slate-800 rounded-2xl border border-slate-700 overflow-hidden shadow-2xl">
-        <table class="w-full text-left border-collapse">
-            <thead class="bg-slate-700/50">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">TV Shows</h1>
+    
+    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900">
                 <tr>
-                    <th class="p-4 text-xs font-bold uppercase tracking-widest text-slate-400">Series</th>
-                    <th class="p-4 text-xs font-bold uppercase tracking-widest text-slate-400 text-right">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Title</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Year</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Seasons</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tags</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-slate-700">
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 {% for show in shows %}
-                <tr class="hover:bg-slate-700/30 transition">
-                    <td class="p-4 font-medium text-white">{{ show.title }}</td>
-                    <td class="p-4 text-right">
-                        <span class="px-2 py-1 bg-teal-900/30 text-teal-400 text-[10px] font-bold rounded border border-teal-800/50 uppercase">Protected</span>
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ show.title }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ show.year }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ show.seasons }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                        <div class="flex flex-wrap gap-1">
+                            {% for tag in show.tags %}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                                {{ tag }}
+                            </span>
+                            {% endfor %}
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+        
+        {% if not shows %}
+        <div class="text-center py-12">
+            <p class="text-gray-500 dark:text-gray-400">No TV shows found</p>
+        </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
