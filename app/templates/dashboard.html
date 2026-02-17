@@ -4,11 +4,29 @@
     <div class="flex justify-between items-center">
         <div class="flex items-center">
             <h1 class="text-3xl font-bold text-white tracking-tight">Dashboard</h1>
-            <span class="ml-4 px-2.5 py-0.5 bg-teal-900/30 text-teal-400 text-[10px] font-bold rounded-full border border-teal-800/50 uppercase tracking-widest">v2.0 Stable</span>
+            <span class="ml-4 px-2.5 py-0.5 bg-teal-900/30 text-teal-400 text-[10px] font-bold rounded-full border border-teal-800/50">v2.0 STABLE</span>
         </div>
-        <div class="text-sm text-gray-500 font-mono">
-            System Status: <span class="text-green-500">Active</span>
+        <div class="flex items-center space-x-4">
+            <div class="text-right">
+                <p class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Builder Last Run</p>
+                <p class="text-xs text-teal-500 font-mono">{{ settings.exclusions.last_build or 'Pending...' }}</p>
+            </div>
         </div>
     </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+            <p class="text-sm text-gray-400">Protected Movies</p>
+            <p class="text-4xl font-bold text-white mt-2">{{ stats.movie_count|default(0) }}</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+            <p class="text-sm text-gray-400">Protected Episodes</p>
+            <p class="text-4xl font-bold text-white mt-2">{{ stats.tv_count|default(0) }}</p>
+        </div>
+        <div class="bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+            <p class="text-sm text-gray-400">Total Size on Cache</p>
+            <p class="text-4xl font-bold text-teal-500 mt-2">{{ stats.total_size|default('0 GB') }}</p>
+        </div>
     </div>
+</div>
 {% endblock %}

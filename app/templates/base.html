@@ -15,29 +15,36 @@
     </style>
 </head>
 <body class="bg-gray-900 text-gray-100 font-sans min-h-screen flex">
-    <div class="w-64 bg-gray-850 border-r border-gray-800 flex flex-col">
+    <div class="w-64 bg-gray-850 border-r border-gray-800 flex flex-col fixed h-full">
         <div class="p-6 border-b border-gray-800">
             <div class="flex items-center space-x-3">
-                <img src="/static/logo.png" class="h-8 w-8 rounded shadow-lg shadow-teal-500/20" onerror="this.src='https://raw.githubusercontent.com/guod-1/mover-tuning-exclusion-manager/main/logo.png'">
+                <img src="/static/logo.png" class="h-8 w-8 rounded" onerror="this.src='https://raw.githubusercontent.com/guod-1/mover-tuning-exclusion-manager/main/logo.png'">
                 <span class="text-white font-bold text-xl uppercase tracking-tighter">MTEM <span class="text-primary-500">v2.0</span></span>
             </div>
         </div>
         <nav class="flex-1 p-4 space-y-2">
-            <a href="/dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-400 hover:text-white">
-                <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+            <a href="/dashboard" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
+                <i class="fa-solid fa-gauge-high w-5"></i><span>Dashboard</span>
             </a>
-            <a href="/exclusions" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-400 hover:text-white">
-                <i class="fa-solid fa-folder-minus"></i><span>Exclusions</span>
+            <a href="/movies" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
+                <i class="fa-solid fa-film w-5"></i><span>Movies</span>
             </a>
-            <a href="/logs" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-400 hover:text-white">
-                <i class="fa-solid fa-terminal"></i><span>Logs</span>
+            <a href="/shows" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
+                <i class="fa-solid fa-tv w-5"></i><span>TV Shows</span>
             </a>
-            <a href="/settings" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-400 hover:text-white">
-                <i class="fa-solid fa-gear"></i><span>Settings</span>
+            <a href="/exclusions" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
+                <i class="fa-solid fa-folder-minus w-5"></i><span>Exclusions</span>
+            </a>
+            <div class="pt-4 pb-2 px-4 text-[10px] font-bold text-gray-500 uppercase tracking-widest">System</div>
+            <a href="/logs" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
+                <i class="fa-solid fa-terminal w-5"></i><span>Logs</span>
+            </a>
+            <a href="/settings" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition text-gray-300">
+                <i class="fa-solid fa-gear w-5"></i><span>Settings</span>
             </a>
         </nav>
     </div>
-    <main class="flex-1 p-8 overflow-y-auto">
+    <main class="flex-1 ml-64 p-8">
         {% block content %}{% endblock %}
     </main>
 </body>
