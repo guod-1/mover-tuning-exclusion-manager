@@ -29,6 +29,7 @@ class ExclusionSettings(BaseModel):
     last_build: Optional[str] = None
     full_sync_cron: str = "0 * * * *"
     log_monitor_cron: str = "*/5 * * * *"
+    last_stats_update: Optional[str] = None
 
 class UserSettings(BaseModel):
     radarr: RadarrSettings = RadarrSettings()
