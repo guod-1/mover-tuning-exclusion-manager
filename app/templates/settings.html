@@ -15,7 +15,7 @@
                 <form action="/settings/radarr/save" method="POST" class="space-y-4">
                     <input type="text" name="url" value="{{ settings.radarr.url }}" placeholder="http://ip:7878" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none">
                     <input type="password" name="api_key" value="{{ settings.radarr.api_key }}" placeholder="API Key" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none">
-                    <button type="submit" class="w-full bg-primary-600 hover:bg-primary-500 py-2 rounded-lg text-white font-bold transition">Save Radarr</button>
+                    <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 py-2 rounded-lg text-white font-bold transition shadow-lg shadow-black/30">Save Radarr</button>
                 </form>
             </div>
         </div>
@@ -27,7 +27,7 @@
                 <form action="/settings/sonarr/save" method="POST" class="space-y-4">
                     <input type="text" name="url" value="{{ settings.sonarr.url }}" placeholder="http://ip:8989" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none">
                     <input type="password" name="api_key" value="{{ settings.sonarr.api_key }}" placeholder="API Key" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none">
-                    <button type="submit" class="w-full bg-primary-600 hover:bg-primary-500 py-2 rounded-lg text-white font-bold transition">Save Sonarr</button>
+                    <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 py-2 rounded-lg text-white font-bold transition shadow-lg shadow-black/30">Save Sonarr</button>
                 </form>
             </div>
         </div>
@@ -98,7 +98,7 @@
                                 <br><span class="text-gray-400 not-italic">Example: Sonarr stores <span class="font-mono text-yellow-500">/data/tv/Show</span> but on your cache drive it lives at <span class="font-mono text-teal-400">/mnt/cache/data/tv/Show</span> — so map <span class="font-mono text-yellow-500">/data/</span> → <span class="font-mono text-teal-400">/mnt/cache/data/</span>.</span>
                             </p>
                         </div>
-                        <button type="button" onclick="addMappingRow()" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded-lg transition">+ Add Row</button>
+                        <button type="button" onclick="addMappingRow()" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded-lg font-bold transition shadow-lg shadow-black/30">+ Add Row</button>
                     </div>
                     <div id="path-mappings-table" class="space-y-2">
                         {% for m in settings.exclusions.path_mappings %}
@@ -113,7 +113,7 @@
                 </div>
 
                 <div class="flex justify-end pt-4">
-                    <button type="submit" class="bg-primary-600 hover:bg-primary-500 text-white font-medium py-2 px-8 rounded-lg transition shadow-lg shadow-primary-950/20">Save All System Settings</button>
+                    <button type="submit" class="bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-8 rounded-lg transition shadow-lg shadow-black/30">Save All System Settings</button>
                 </div>
             </form>
 
