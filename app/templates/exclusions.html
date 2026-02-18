@@ -62,7 +62,7 @@
         <h3 class="text-lg font-semibold text-white mb-4">Custom Folders</h3>
         <form action="/exclusions/custom-folders" method="POST" class="space-y-4">
             <textarea name="custom_folders" rows="5" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-sm outline-none">{% for folder in user_settings.exclusions.custom_folders %}{{ folder }}{{ "\n" if not loop.last }}{% endfor %}</textarea>
-            <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg transition">Save Custom Folders</button>
+            <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg transition shadow-lg shadow-black/30">Save Custom Folders</button>
         </form>
     </div>
 
