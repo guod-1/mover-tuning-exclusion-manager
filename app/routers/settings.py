@@ -24,7 +24,7 @@ async def save_paths(
     full_sync_cron: str = Form(...),
     log_monitor_cron: str = Form(...)
 ):
-    from app.core.config import PathMapping
+    from app.core.config import ServicePathMapping
     settings = get_user_settings()
     settings.exclusions.cache_mount_path = cache_mount_path
     settings.exclusions.movie_base_path = movie_base_path
