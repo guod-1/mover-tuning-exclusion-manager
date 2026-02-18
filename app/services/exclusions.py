@@ -46,8 +46,12 @@ class ExclusionManager:
                 with open(pc_path, 'r') as f:
                     for line in f:
                         line = line.strip()
-                        if line and not line.startswith('#'):
-                            all_paths.add(line)
+                        if not line or line.startswith('#'):
+                            continue
+                        # PlexCache paths start with /chloe/tv/ or /chloe/movies/
+                        # Remap to full host path: /mnt/chloe/data/media/...
+                        line = line.replace('/chloe/', '/mnt/chloe/data/media/', 1)
+                        all_paths.add(line)
             except Exception as e:
                 logger.error(f"Error reading PlexCache file: {e}")
 
