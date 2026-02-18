@@ -148,7 +148,7 @@
                         the app rewrites those prefixes so CA Mover sees the correct path on your Unraid host.
                         <br><span class="text-gray-400 not-italic">
                             <strong class="text-yellow-500">API Prefix</strong> = what the service returns.
-                            <strong class="text-teal-400">Host Prefix</strong> = what gets written to the exclusion file — must match the path as your Unraid host sees it (e.g. <span class="font-mono">/mnt/chloe/...</span>).
+                            <strong class="text-teal-400">Host Prefix</strong> = what gets written to the exclusion file — must match the path as your Unraid host sees it (e.g. <span class="font-mono">/mnt/cache/...</span>).
                         </span>
                     </p>
 
@@ -230,10 +230,18 @@
             </form>
 
             <script>
+            function showToast(msg, type='success') {
+                const t = document.createElement('div');
+                t.className = `fixed bottom-6 right-6 z-50 px-4 py-3 rounded-lg text-sm font-bold shadow-xl transition-all duration-300 ${type === 'success' ? 'bg-green-900 border border-green-700 text-green-300' : 'bg-red-900 border border-red-700 text-red-300'}`;
+                t.textContent = msg;
+                document.body.appendChild(t);
+                setTimeout(() => t.remove(), 3000);
+            }
+
             async function detectSingle(service) {
                 const btn = event.target;
-                const orig = btn.textContent;
-                btn.textContent = '...';
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<span class="animate-spin inline-block">⟳</span> Detecting...';
                 btn.disabled = true;
                 try {
                     const res = await fetch('/settings/path-prefixes');
@@ -242,17 +250,17 @@
                     const key = service.charAt(0).toUpperCase() + service.slice(1);
                     if (data[key] && !data[key].startsWith('Error') && input) {
                         input.value = data[key];
-                        input.classList.add('ring-1', 'ring-green-500');
-                        setTimeout(() => input.classList.remove('ring-1', 'ring-green-500'), 2000);
+                        input.style.transition = 'border-color 0.2s';
+                        input.style.borderColor = '#22c55e';
+                        setTimeout(() => input.style.borderColor = '', 2000);
+                        showToast(`✓ ${key} prefix detected: ${data[key]}`, 'success');
                     } else {
-                        btn.textContent = '✗ Not found';
-                        setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
-                        return;
+                        showToast(`✗ Could not detect ${key} prefix`, 'error');
                     }
                 } catch(e) {
-                    alert('Detection failed: ' + e);
+                    showToast('Detection failed: ' + e, 'error');
                 } finally {
-                    btn.textContent = orig;
+                    btn.innerHTML = orig;
                     btn.disabled = false;
                 }
             }
