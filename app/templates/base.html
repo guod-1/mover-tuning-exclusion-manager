@@ -2,23 +2,54 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MTEM v2.0</title>
+    <title>MTEM</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .nav-link { transition: all 0.15s ease; }
+        .nav-link:hover, .nav-link.active { background: rgba(20,184,166,0.08); color: #2dd4bf; }
+        .nav-link.active { border-left: 2px solid #14b8a6; }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 flex min-h-screen">
-    <div class="w-64 bg-gray-800 border-r border-gray-700 flex flex-col fixed h-full">
-        <div class="p-6 border-b border-gray-700 font-bold text-xl text-teal-500 uppercase">MTEM v2.0</div>
-        <nav class="flex-1 p-4 space-y-2">
-            <a href="/dashboard" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-gauge mr-2"></i>Dashboard</a>
-            <a href="/movies" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-film mr-2"></i>Movies</a>
-            <a href="/shows" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-tv mr-2"></i>TV Shows</a>
-            <a href="/exclusions" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-folder-minus mr-2"></i>Exclusions</a>
-            <a href="/logs" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-terminal mr-2"></i>Logs</a>
-            <a href="/settings" class="block p-3 rounded hover:bg-gray-700"><i class="fa-solid fa-gear mr-2"></i>Settings</a>
+<body class="bg-gray-950 text-gray-100 flex min-h-screen">
+    <!-- Sidebar -->
+    <div class="w-56 bg-gray-900 border-r border-gray-800 flex flex-col fixed h-full z-10">
+        <div class="px-5 py-5 border-b border-gray-800">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-teal-500/20 border border-teal-500/30 flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved text-teal-400 text-xs"></i>
+                </div>
+                <div>
+                    <div class="text-xs font-black text-white tracking-widest uppercase">MTEM</div>
+                    <div class="text-[9px] text-gray-500 tracking-wider uppercase">v2.0</div>
+                </div>
+            </div>
+        </div>
+        <nav class="flex-1 p-3 space-y-0.5">
+            <a href="/dashboard" class="nav-link {% if request.url.path == '/dashboard/' %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 text-sm">
+                <i class="fa-solid fa-gauge w-4 text-center text-xs"></i>Dashboard
+            </a>
+            <a href="/movies" class="nav-link {% if '/movies' in request.url.path %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 text-sm">
+                <i class="fa-solid fa-film w-4 text-center text-xs"></i>Movies
+            </a>
+            <a href="/shows" class="nav-link {% if '/shows' in request.url.path %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 text-sm">
+                <i class="fa-solid fa-tv w-4 text-center text-xs"></i>TV Shows
+            </a>
+            <a href="/exclusions" class="nav-link {% if '/exclusions' in request.url.path %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 text-sm">
+                <i class="fa-solid fa-folder-minus w-4 text-center text-xs"></i>Exclusions
+            </a>
+            <a href="/logs" class="nav-link {% if '/logs' in request.url.path %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 text-sm">
+                <i class="fa-solid fa-terminal w-4 text-center text-xs"></i>Logs
+            </a>
+            <a href="/settings" class="nav-link {% if '/settings' in request.url.path %}active{% endif %} flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-400 text-sm">
+                <i class="fa-solid fa-gear w-4 text-center text-xs"></i>Settings
+            </a>
         </nav>
+        <div class="p-3 border-t border-gray-800">
+            <div class="text-[10px] text-gray-600 text-center">Mover Tuning Exclusion Manager</div>
+        </div>
     </div>
-    <main class="flex-1 ml-64 p-8">
+    <main class="flex-1 ml-56 p-8 bg-gray-950">
         {% block content %}{% endblock %}
     </main>
 </body>
