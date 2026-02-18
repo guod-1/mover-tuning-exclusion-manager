@@ -16,6 +16,11 @@
                     <input type="text" name="url" value="{{ settings.radarr.url }}" placeholder="http://ip:7878" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none">
                     <input type="password" name="api_key" value="{{ settings.radarr.api_key }}" placeholder="API Key" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none">
                     <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 py-2 rounded-lg text-white font-bold transition shadow-lg shadow-black/30">Save Radarr</button>
+                    {% if request.query_params.get("radarr_status") == "success" %}
+                    <p class="text-green-400 text-xs text-center mt-2 flex items-center justify-center gap-1">✓ Connected successfully</p>
+                    {% elif request.query_params.get("radarr_status") == "error" %}
+                    <p class="text-red-400 text-xs text-center mt-2 flex items-center justify-center gap-1">✗ Connection failed — check URL and API key</p>
+                    {% endif %}
                 </form>
             </div>
         </div>
@@ -28,6 +33,11 @@
                     <input type="text" name="url" value="{{ settings.sonarr.url }}" placeholder="http://ip:8989" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none">
                     <input type="password" name="api_key" value="{{ settings.sonarr.api_key }}" placeholder="API Key" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none">
                     <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 py-2 rounded-lg text-white font-bold transition shadow-lg shadow-black/30">Save Sonarr</button>
+                    {% if request.query_params.get("sonarr_status") == "success" %}
+                    <p class="text-green-400 text-xs text-center mt-2 flex items-center justify-center gap-1">✓ Connected successfully</p>
+                    {% elif request.query_params.get("sonarr_status") == "error" %}
+                    <p class="text-red-400 text-xs text-center mt-2 flex items-center justify-center gap-1">✗ Connection failed — check URL and API key</p>
+                    {% endif %}
                 </form>
             </div>
         </div>
@@ -62,13 +72,13 @@
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Cache Mount Point</label>
                         <input type="text" name="cache_mount_path" value="{{ settings.exclusions.cache_mount_path }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-xs outline-none">
                         <p class="text-[10px] text-gray-500 mt-1 italic">Where your cache drive is mounted <strong class="text-gray-400">inside this container</strong>. Used only to verify files exist on cache before adding them to the exclusion list. Never written to the output file.</p>
-                        <p class="text-[10px] text-gray-500 mt-1 italic">Where your cache drive is mounted <strong class="text-gray-400">inside this container</strong>. Used only to verify files exist on cache before adding them to the exclusion list. Never written to the output file.</p>
+                        
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Mover Tuning Log Path</label>
                         <input type="text" name="ca_mover_log_path" value="{{ settings.exclusions.ca_mover_log_path }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-xs outline-none">
                         <p class="text-[10px] text-gray-500 mt-1 italic">Path to the CA Mover Tuning log file inside this container. Used to monitor mover activity and update stats. Map your Unraid <span class="font-mono text-yellow-500">/boot/logs/</span> or plugin log directory to the container path set here.</p>
-                        <p class="text-[10px] text-gray-500 mt-1 italic">Path to the CA Mover Tuning log file inside this container. Used to monitor mover activity and update stats. Map your Unraid <span class="font-mono text-yellow-500">/boot/logs/</span> or plugin log directory to the container path set here.</p>
+                        
                     </div>
                 </div>
 
@@ -77,13 +87,13 @@
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Movie Base Path (Host)</label>
                         <input type="text" name="movie_base_path" value="{{ settings.exclusions.movie_base_path }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-xs outline-none">
                         <p class="text-[10px] text-gray-500 mt-1 italic">The root folder where movies are stored on your cache drive, as seen by the <strong class="text-gray-400">Unraid host</strong>. Used for display and stats — not for path validation.</p>
-                        <p class="text-[10px] text-gray-500 mt-1 italic">The root folder where movies are stored on your cache drive, as seen by the <strong class="text-gray-400">Unraid host</strong>. Used for display and stats — not for path validation.</p>
+                        
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-gray-500 uppercase mb-1">TV Base Path (Host)</label>
                         <input type="text" name="tv_base_path" value="{{ settings.exclusions.tv_base_path }}" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2 text-white font-mono text-xs outline-none">
                         <p class="text-[10px] text-gray-500 mt-1 italic">The root folder where TV shows are stored on your cache drive, as seen by the <strong class="text-gray-400">Unraid host</strong>. Used for display and stats — not for path validation.</p>
-                        <p class="text-[10px] text-gray-500 mt-1 italic">The root folder where TV shows are stored on your cache drive, as seen by the <strong class="text-gray-400">Unraid host</strong>. Used for display and stats — not for path validation.</p>
+                        
                     </div>
                 </div>
 
