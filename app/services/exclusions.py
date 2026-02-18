@@ -45,6 +45,9 @@ class ExclusionManager:
         if pc_from and path.startswith(pc_from + '/'):
             mapped = pc_to.rstrip('/') + '/' + path[len(pc_from):].lstrip('/')
             return container + mapped[len(host):] if mapped.startswith(host) else container + '/' + mapped.lstrip('/')
+        # Path already starts with container mount (e.g. /mnt/cache/...) -> use as-is
+        if path.startswith(container + '/') or path == container:
+            return path
         # Relative path (e.g. /data/media/movies/...) -> /mnt/cache/data/media/movies/
         return container + '/' + path.lstrip('/')
 
