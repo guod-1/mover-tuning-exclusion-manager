@@ -10,16 +10,29 @@
 
     <!-- Tag filters -->
     {% if all_tags %}
-    <div class="flex items-center gap-3 mb-6">
-        <label class="text-xs font-bold text-gray-500 uppercase tracking-widest shrink-0">Filter by Tag</label>
-        <select id="tagFilter" onchange="setTagFilter(this.value)"
-                class="bg-gray-900 border border-gray-700 text-gray-300 text-sm rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-teal-500 cursor-pointer">
-            <option value="">All</option>
-            <option value="__untagged__">No Tags</option>
+    <div class="mb-6">
+        <div class="flex items-center gap-3">
+            <label class="text-xs font-bold text-gray-500 uppercase tracking-widest shrink-0">Filter by Tag</label>
+            <button type="button" onclick="toggleTagPanel()"
+                    id="tagPanelBtn"
+                    class="flex items-center gap-2 bg-gray-900 border border-gray-700 text-gray-300 text-sm rounded-lg px-3 py-2 outline-none hover:border-teal-600 transition">
+                <span id="tagPanelLabel">All tags</span>
+                <span class="text-gray-600 text-xs">▾</span>
+            </button>
+            <button type="button" onclick="clearTagFilters()" class="text-xs text-gray-500 hover:text-gray-300 transition hidden" id="clearTagsBtn">✕ Clear</button>
+        </div>
+        <div id="tagPanel" class="hidden mt-2 bg-gray-900 border border-gray-700 rounded-lg p-3 flex flex-wrap gap-2">
+            <label class="flex items-center gap-1.5 cursor-pointer group">
+                <input type="checkbox" value="__untagged__" onchange="applyTagFilters()" class="tag-checkbox accent-teal-500">
+                <span class="text-xs text-gray-400 group-hover:text-white transition">No Tags</span>
+            </label>
             {% for tag in all_tags %}
-            <option value="{{ tag }}">{{ tag }}</option>
+            <label class="flex items-center gap-1.5 cursor-pointer group">
+                <input type="checkbox" value="{{ tag }}" onchange="applyTagFilters()" class="tag-checkbox accent-teal-500">
+                <span class="text-xs text-gray-400 group-hover:text-white transition">{{ tag }}</span>
+            </label>
             {% endfor %}
-        </select>
+        </div>
     </div>
     {% endif %}
 
@@ -55,10 +68,34 @@
 </div>
 
 <script>
-let activeTag = null;
+let activeTags = new Set();
 
-function setTagFilter(val) {
-    activeTag = val || null;
+function toggleTagPanel() {
+    const panel = document.getElementById('tagPanel');
+    panel.classList.toggle('hidden');
+}
+
+function applyTagFilters() {
+    activeTags = new Set(
+        [...document.querySelectorAll('.tag-checkbox:checked')].map(c => c.value)
+    );
+    const label = document.getElementById('tagPanelLabel');
+    const clearBtn = document.getElementById('clearTagsBtn');
+    if (activeTags.size === 0) {
+        label.textContent = 'All tags';
+        clearBtn.classList.add('hidden');
+    } else {
+        label.textContent = activeTags.size === 1 ? [...activeTags][0] : `${activeTags.size} tags selected`;
+        clearBtn.classList.remove('hidden');
+    }
+    applyFilters();
+}
+
+function clearTagFilters() {
+    document.querySelectorAll('.tag-checkbox').forEach(c => c.checked = false);
+    activeTags = new Set();
+    document.getElementById('tagPanelLabel').textContent = 'All tags';
+    document.getElementById('clearTagsBtn').classList.add('hidden');
     applyFilters();
 }
 
@@ -71,8 +108,13 @@ function applyFilters() {
         const tags = row.dataset.tags || '';
         const matchesSearch = !search || title.includes(search);
         let matchesTag = true;
-        if (activeTag === '__untagged__') matchesTag = tags === '';
-        else if (activeTag) matchesTag = tags.split(',').includes(activeTag.toLowerCase());
+        if (activeTags.size > 0) {
+            const tagList = tags ? tags.split(',') : [];
+            matchesTag = [...activeTags].every(t => {
+                if (t === '__untagged__') return tagList.length === 0;
+                return tagList.includes(t.toLowerCase());
+            });
+        }
         row.style.display = matchesSearch && matchesTag ? '' : 'none';
         if (matchesSearch && matchesTag) visible++;
     });
