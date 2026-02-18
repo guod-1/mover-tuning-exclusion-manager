@@ -144,23 +144,84 @@
                         <span class="w-4 h-px bg-gray-600"></span> Path Mappings <span class="flex-1 h-px bg-gray-700"></span>
                     </h3>
                     <p class="text-[10px] text-gray-500 mb-4 italic">
-                        Radarr, Sonarr, and PlexCache store paths using their own internal mounts which don't match your Unraid host paths.
-                        These mappings rewrite path prefixes before writing to the exclusion file.
-                        <span class="text-gray-400 not-italic block mt-1">
-                            e.g. <span class="font-mono text-yellow-500">/data/</span> → <span class="font-mono text-teal-400">/mnt/cache/data/</span>
+                        Each service stores file paths using its own internal container mount. Before writing to the exclusion file,
+                        the app rewrites those prefixes so CA Mover sees the correct path on your Unraid host.
+                        <br><span class="text-gray-400 not-italic">
+                            <strong class="text-yellow-500">API Prefix</strong> = what the service returns.
+                            <strong class="text-teal-400">Host Prefix</strong> = what gets written to the exclusion file — must match the path as your Unraid host sees it (e.g. <span class="font-mono">/mnt/chloe/...</span>).
                         </span>
                     </p>
-                    <div id="path-mappings-table" class="space-y-2 mb-3">
-                        {% for m in settings.exclusions.path_mappings %}
-                        <div class="flex gap-2 items-center mapping-row">
-                            <input type="text" name="from_prefix_{{ loop.index0 }}" value="{{ m.from_prefix }}" placeholder="/data/" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-primary-500">
-                            <span class="text-gray-500 text-sm shrink-0">→</span>
-                            <input type="text" name="to_prefix_{{ loop.index0 }}" value="{{ m.to_prefix }}" placeholder="/mnt/cache/data/" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-primary-500">
-                            <button type="button" onclick="this.closest('.mapping-row').remove(); reindexMappings();" class="text-gray-600 hover:text-red-400 transition text-xl leading-none w-6 shrink-0 text-center">×</button>
+
+                    <div class="space-y-3">
+                        <!-- Radarr -->
+                        <div class="bg-gray-900/50 rounded-lg border border-gray-700/50 p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-6 h-6 rounded bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
+                                    <i class="fa-solid fa-film text-yellow-400 text-[10px]"></i>
+                                </div>
+                                <span class="text-sm font-bold text-white">Radarr</span>
+                                <span class="text-[10px] text-gray-500 italic ml-1">— tagged movie exclusions</span>
+                                <button type="button" onclick="detectSingle('radarr')" class="ml-auto text-[10px] bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded transition font-bold shadow shadow-black/30">⟳ Detect</button>
+                            </div>
+                            <div class="flex gap-2 items-end">
+                                <div class="flex-1">
+                                    <label class="block text-[10px] text-yellow-500 font-bold uppercase mb-1">API Prefix <span class="text-gray-500 font-normal normal-case">(what Radarr returns)</span></label>
+                                    <input type="text" id="radarr_from_input" name="radarr_from" value="{{ settings.exclusions.radarr_mapping.from_prefix }}" placeholder="/data/" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-yellow-500/50">
+                                </div>
+                                <span class="text-gray-500 text-sm shrink-0 pb-2">→</span>
+                                <div class="flex-1">
+                                    <label class="block text-[10px] text-teal-400 font-bold uppercase mb-1">Host Prefix <span class="text-gray-500 font-normal normal-case">(written to exclusion file)</span></label>
+                                    <input type="text" name="radarr_to" value="{{ settings.exclusions.radarr_mapping.to_prefix }}" placeholder="/mnt/chloe/data/" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-teal-500/50">
+                                </div>
+                            </div>
                         </div>
-                        {% endfor %}
+
+                        <!-- Sonarr -->
+                        <div class="bg-gray-900/50 rounded-lg border border-gray-700/50 p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-6 h-6 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                                    <i class="fa-solid fa-tv text-blue-400 text-[10px]"></i>
+                                </div>
+                                <span class="text-sm font-bold text-white">Sonarr</span>
+                                <span class="text-[10px] text-gray-500 italic ml-1">— tagged TV show exclusions</span>
+                                <button type="button" onclick="detectSingle('sonarr')" class="ml-auto text-[10px] bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded transition font-bold shadow shadow-black/30">⟳ Detect</button>
+                            </div>
+                            <div class="flex gap-2 items-end">
+                                <div class="flex-1">
+                                    <label class="block text-[10px] text-yellow-500 font-bold uppercase mb-1">API Prefix <span class="text-gray-500 font-normal normal-case">(what Sonarr returns)</span></label>
+                                    <input type="text" id="sonarr_from_input" name="sonarr_from" value="{{ settings.exclusions.sonarr_mapping.from_prefix }}" placeholder="/data/" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-yellow-500/50">
+                                </div>
+                                <span class="text-gray-500 text-sm shrink-0 pb-2">→</span>
+                                <div class="flex-1">
+                                    <label class="block text-[10px] text-teal-400 font-bold uppercase mb-1">Host Prefix <span class="text-gray-500 font-normal normal-case">(written to exclusion file)</span></label>
+                                    <input type="text" name="sonarr_to" value="{{ settings.exclusions.sonarr_mapping.to_prefix }}" placeholder="/mnt/chloe/data/" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-teal-500/50">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PlexCache -->
+                        <div class="bg-gray-900/50 rounded-lg border border-gray-700/50 p-4">
+                            <div class="flex items-center gap-2 mb-3">
+                                <div class="w-6 h-6 rounded bg-orange-500/10 border border-orange-500/20 flex items-center justify-center">
+                                    <i class="fa-solid fa-database text-orange-400 text-[10px]"></i>
+                                </div>
+                                <span class="text-sm font-bold text-white">PlexCache</span>
+                                <span class="text-[10px] text-gray-500 italic ml-1">— PlexCache pinned media exclusions</span>
+                                <button type="button" onclick="detectSingle('plexcache')" class="ml-auto text-[10px] bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded transition font-bold shadow shadow-black/30">⟳ Detect</button>
+                            </div>
+                            <div class="flex gap-2 items-end">
+                                <div class="flex-1">
+                                    <label class="block text-[10px] text-yellow-500 font-bold uppercase mb-1">API Prefix <span class="text-gray-500 font-normal normal-case">(what PlexCache returns)</span></label>
+                                    <input type="text" id="plexcache_from_input" name="plexcache_from" value="{{ settings.exclusions.plexcache_mapping.from_prefix }}" placeholder="/chloe/" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-yellow-500/50">
+                                </div>
+                                <span class="text-gray-500 text-sm shrink-0 pb-2">→</span>
+                                <div class="flex-1">
+                                    <label class="block text-[10px] text-teal-400 font-bold uppercase mb-1">Host Prefix <span class="text-gray-500 font-normal normal-case">(written to exclusion file)</span></label>
+                                    <input type="text" name="plexcache_to" value="{{ settings.exclusions.plexcache_mapping.to_prefix }}" placeholder="/mnt/chloe/data/media/" class="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-teal-500/50">
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button type="button" onclick="addMappingRow()" class="text-xs bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-bold transition shadow-lg shadow-black/30">+ Add Mapping</button>
                 </div>
 
                 <div class="flex justify-end pt-2 border-t border-gray-700">
@@ -169,24 +230,31 @@
             </form>
 
             <script>
-            function reindexMappings() {
-                document.querySelectorAll('#path-mappings-table .mapping-row').forEach((row, i) => {
-                    row.querySelectorAll('input')[0].name = `from_prefix_${i}`;
-                    row.querySelectorAll('input')[1].name = `to_prefix_${i}`;
-                });
-            }
-            function addMappingRow() {
-                const table = document.getElementById('path-mappings-table');
-                const i = table.querySelectorAll('.mapping-row').length;
-                const row = document.createElement('div');
-                row.className = 'flex gap-2 items-center mapping-row';
-                row.innerHTML = `
-                    <input type="text" name="from_prefix_${i}" placeholder="/data/" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-primary-500">
-                    <span class="text-gray-500 text-sm shrink-0">→</span>
-                    <input type="text" name="to_prefix_${i}" placeholder="/mnt/cache/data/" class="flex-1 bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-white font-mono text-xs outline-none focus:ring-1 focus:ring-primary-500">
-                    <button type="button" onclick="this.closest('.mapping-row').remove(); reindexMappings();" class="text-gray-600 hover:text-red-400 transition text-xl leading-none w-6 shrink-0 text-center">×</button>
-                `;
-                table.appendChild(row);
+            async function detectSingle(service) {
+                const btn = event.target;
+                const orig = btn.textContent;
+                btn.textContent = '...';
+                btn.disabled = true;
+                try {
+                    const res = await fetch('/settings/path-prefixes');
+                    const data = await res.json();
+                    const input = document.getElementById(service + '_from_input');
+                    const key = service.charAt(0).toUpperCase() + service.slice(1);
+                    if (data[key] && !data[key].startsWith('Error') && input) {
+                        input.value = data[key];
+                        input.classList.add('ring-1', 'ring-green-500');
+                        setTimeout(() => input.classList.remove('ring-1', 'ring-green-500'), 2000);
+                    } else {
+                        btn.textContent = '✗ Not found';
+                        setTimeout(() => { btn.textContent = orig; btn.disabled = false; }, 2000);
+                        return;
+                    }
+                } catch(e) {
+                    alert('Detection failed: ' + e);
+                } finally {
+                    btn.textContent = orig;
+                    btn.disabled = false;
+                }
             }
             </script>
         </div>
