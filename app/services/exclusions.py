@@ -34,12 +34,19 @@ class ExclusionManager:
     def _to_container_path(self, path: str) -> str:
         """Translate any path to container-accessible path for existence check"""
         settings = get_user_settings()
-        host = settings.exclusions.host_cache_path.rstrip('/')
-        container = settings.exclusions.cache_mount_path.rstrip('/')
+        host = settings.exclusions.host_cache_path.rstrip('/')  # /mnt/chloe
+        container = settings.exclusions.cache_mount_path.rstrip('/')  # /mnt/cache
+        # Already a full host path (e.g. /mnt/chloe/data/...) -> swap prefix
         if path.startswith(host + '/') or path == host:
             return container + path[len(host):]
-        else:
-            return container + '/' + path.lstrip('/')
+        # PlexCache raw path (e.g. /chloe/tv/...) -> /mnt/cache/data/media/tv/...
+        pc_from = settings.exclusions.plexcache_mapping.from_prefix.rstrip('/')  # /chloe
+        pc_to = settings.exclusions.plexcache_mapping.to_prefix  # /mnt/chloe/data/media/
+        if pc_from and path.startswith(pc_from + '/'):
+            mapped = pc_to.rstrip('/') + '/' + path[len(pc_from):].lstrip('/')
+            return container + mapped[len(host):] if mapped.startswith(host) else container + '/' + mapped.lstrip('/')
+        # Relative path (e.g. /data/media/movies/...) -> /mnt/cache/data/media/movies/
+        return container + '/' + path.lstrip('/')
 
     def _exists_on_cache(self, path: str) -> bool:
         """Check if path exists via container mount"""
