@@ -15,33 +15,30 @@
         </form>
     </div>
 
-    <!-- Service Status Row -->
+    <!-- Service Status -->
     <div class="grid grid-cols-2 gap-4">
-        <!-- Radarr -->
         <div class="bg-gray-900 rounded-xl border border-gray-800 p-5 flex items-center gap-4">
             <div class="w-10 h-10 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-film text-yellow-400"></i>
             </div>
-            <div class="flex-1 min-w-0">
-                <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-0.5">Radarr</div>
+            <div>
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Radarr</div>
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full {{ 'bg-green-400 shadow-sm shadow-green-500/50' if radarr_up else 'bg-red-400' }}"></span>
+                    <span class="w-2 h-2 rounded-full {{ 'bg-green-400 shadow shadow-green-500/50' if radarr_up else 'bg-red-400' }}"></span>
                     <span class="text-sm font-semibold {{ 'text-green-400' if radarr_up else 'text-red-400' }}">
                         {{ 'Connected' if radarr_up else 'Disconnected' }}
                     </span>
                 </div>
             </div>
         </div>
-
-        <!-- Sonarr -->
         <div class="bg-gray-900 rounded-xl border border-gray-800 p-5 flex items-center gap-4">
             <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
                 <i class="fa-solid fa-tv text-blue-400"></i>
             </div>
-            <div class="flex-1 min-w-0">
-                <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-0.5">Sonarr</div>
+            <div>
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Sonarr</div>
                 <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full {{ 'bg-green-400 shadow-sm shadow-green-500/50' if sonarr_up else 'bg-red-400' }}"></span>
+                    <span class="w-2 h-2 rounded-full {{ 'bg-green-400 shadow shadow-green-500/50' if sonarr_up else 'bg-red-400' }}"></span>
                     <span class="text-sm font-semibold {{ 'text-green-400' if sonarr_up else 'text-red-400' }}">
                         {{ 'Connected' if sonarr_up else 'Disconnected' }}
                     </span>
@@ -50,9 +47,8 @@
         </div>
     </div>
 
-    <!-- Stats Row -->
+    <!-- Stats -->
     <div class="grid grid-cols-3 gap-4">
-        <!-- Movies -->
         <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Movies</span>
@@ -63,8 +59,6 @@
             <div class="text-3xl font-black text-white">{{ movie_count }}</div>
             <div class="text-xs text-gray-600 mt-1">files protected on cache</div>
         </div>
-
-        <!-- TV -->
         <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">TV Episodes</span>
@@ -75,8 +69,6 @@
             <div class="text-3xl font-black text-white">{{ tv_count }}</div>
             <div class="text-xs text-gray-600 mt-1">files protected on cache</div>
         </div>
-
-        <!-- Total -->
         <div class="bg-gray-900 rounded-xl border border-teal-500/20 p-5">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Total</span>
@@ -91,17 +83,14 @@
 
     <!-- Bottom Row -->
     <div class="grid grid-cols-2 gap-4">
-        <!-- Last Build -->
         <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
             <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Exclusion Builder</div>
             <div class="flex items-center gap-2 mb-1">
                 <i class="fa-solid fa-circle-check text-teal-400 text-xs"></i>
                 <span class="text-sm text-white font-medium">Last built {{ last_build }}</span>
             </div>
-            <div class="text-xs text-gray-600">Rebuild runs automatically on schedule or manually above.</div>
+            <div class="text-xs text-gray-600">Rebuilds automatically on schedule or use the button above.</div>
         </div>
-
-        <!-- CA Mover -->
         <div class="bg-gray-900 rounded-xl border border-gray-800 p-5">
             <div class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">CA Mover Tuning</div>
             <div class="flex items-center gap-2 mb-1">
